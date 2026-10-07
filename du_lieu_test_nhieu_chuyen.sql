@@ -21,24 +21,29 @@ SET NAMES utf8mb4;
 -- Mật khẩu 123456789 (BCrypt, giống file dữ liệu mẫu của nhóm)
 SET @mk = '$2b$10$rLLNt6W1iqjQp6FhPCLsc.RfSESQmM/olgTqimc6BD0W6dx0CeUlK';
 
+-- Tên vai trò viết bằng UNHEX để không lỗi mã hóa khi chạy bằng MySQL Command Line trên Windows
+SET @vt_ql = CONVERT(UNHEX('5175E1BAA36E206CC3BD') USING utf8mb4); -- 'Quản lý'
+SET @vt_dp = CONVERT(UNHEX('4E68C3A26E207669C3AA6E20C49169E1BB8175207068E1BB9169') USING utf8mb4); -- 'Nhân viên điều phối'
+SET @vt_tx = CONVERT(UNHEX('54C3A0692078E1BABF') USING utf8mb4); -- 'Tài xế'
+
 -- 1) Vai trò (chỉ thêm nếu chưa có)
-INSERT INTO vai_tro (ten_vai_tro) SELECT 'Quản lý' FROM DUAL
-  WHERE NOT EXISTS (SELECT 1 FROM vai_tro WHERE ten_vai_tro = 'Quản lý');
-INSERT INTO vai_tro (ten_vai_tro) SELECT 'Nhân viên điều phối' FROM DUAL
-  WHERE NOT EXISTS (SELECT 1 FROM vai_tro WHERE ten_vai_tro = 'Nhân viên điều phối');
-INSERT INTO vai_tro (ten_vai_tro) SELECT 'Tài xế' FROM DUAL
-  WHERE NOT EXISTS (SELECT 1 FROM vai_tro WHERE ten_vai_tro = 'Tài xế');
+INSERT INTO vai_tro (ten_vai_tro) SELECT @vt_ql FROM DUAL
+  WHERE NOT EXISTS (SELECT 1 FROM vai_tro WHERE CAST(ten_vai_tro AS BINARY) = CAST(@vt_ql AS BINARY));
+INSERT INTO vai_tro (ten_vai_tro) SELECT @vt_dp FROM DUAL
+  WHERE NOT EXISTS (SELECT 1 FROM vai_tro WHERE CAST(ten_vai_tro AS BINARY) = CAST(@vt_dp AS BINARY));
+INSERT INTO vai_tro (ten_vai_tro) SELECT @vt_tx FROM DUAL
+  WHERE NOT EXISTS (SELECT 1 FROM vai_tro WHERE CAST(ten_vai_tro AS BINARY) = CAST(@vt_tx AS BINARY));
 
 -- 2) Tài khoản quản lý, điều phối, tài xế 2
 INSERT IGNORE INTO tai_khoan (ten_dang_nhap, mat_khau, email, ho_ten, trang_thai, da_xac_thuc, phaidoimatkhau, id_vai_tro)
 VALUES ('quanly01', @mk, 'quanly01@example.com', 'Quản lý Test', 1, 1, 0,
-        (SELECT id_vai_tro FROM vai_tro WHERE ten_vai_tro = 'Quản lý' LIMIT 1));
+        (SELECT id_vai_tro FROM vai_tro WHERE CAST(ten_vai_tro AS BINARY) = CAST(@vt_ql AS BINARY) LIMIT 1));
 INSERT IGNORE INTO tai_khoan (ten_dang_nhap, mat_khau, email, ho_ten, trang_thai, da_xac_thuc, phaidoimatkhau, id_vai_tro)
 VALUES ('dieuphoi01', @mk, 'dieuphoi01@example.com', 'Điều phối Test', 1, 1, 0,
-        (SELECT id_vai_tro FROM vai_tro WHERE ten_vai_tro = 'Nhân viên điều phối' LIMIT 1));
+        (SELECT id_vai_tro FROM vai_tro WHERE CAST(ten_vai_tro AS BINARY) = CAST(@vt_dp AS BINARY) LIMIT 1));
 INSERT IGNORE INTO tai_khoan (ten_dang_nhap, mat_khau, email, ho_ten, trang_thai, da_xac_thuc, phaidoimatkhau, id_vai_tro)
 VALUES ('taixe02', @mk, 'taixe02@example.com', 'Trần Văn Hai', 1, 1, 0,
-        (SELECT id_vai_tro FROM vai_tro WHERE ten_vai_tro = 'Tài xế' LIMIT 1));
+        (SELECT id_vai_tro FROM vai_tro WHERE CAST(ten_vai_tro AS BINARY) = CAST(@vt_tx AS BINARY) LIMIT 1));
 
 INSERT INTO tai_xe (ho_ten, sdt, sogplx, trang_thai, idtk)
 SELECT 'Trần Văn Hai', '0900000002', 'GPLX-TEST-02', 1, idtk FROM tai_khoan
