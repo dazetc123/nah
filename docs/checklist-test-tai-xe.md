@@ -62,7 +62,7 @@ Trong IntelliJ: **Run → Edit Configurations → Environment variables**.
 | Đơn A giao **ngày mai**, 2 chuyến Chờ nhận của `taixe01` | 1.1.7 lọc ngày, 1.3.5, 1.5.7 |
 | Đơn B giao **3 ngày trước**, 1 chuyến Hoàn thành | 1.1.7 lọc trạng thái/ngày |
 | Đơn C, 1 chuyến của `taixe02` | 1.2.5 |
-| Tọa độ cho trạm trộn mẫu (cách công trình khoảng 4 km) | 1.2.4 bản đồ và tuyến đường |
+| Tọa độ cho trạm trộn mẫu (cách công trình khoảng 4 km) | 1.2.3 chỉ đường từ trạm trộn |
 
 > **Về tài khoản admin:** web quản trị (`frontend-web`) hiện chưa có màn hình tạo chuyến, nên cách nhanh nhất để có thêm chuyến là chạy file SQL trên. Nếu muốn tạo chuyến bằng API: đăng nhập `dieuphoi01` ở Swagger (`POST /api/auth/dang-nhap`, header `ClientKey`), bấm **Authorize** rồi gọi `POST /api/dieu-phoi/xe/chuyen`.
 
@@ -123,11 +123,8 @@ SELECT iddh, trang_thai FROM don_hang;  -- 4 = Hoàn thành
 |---|----------|----------|-----------|-----------|
 | 1.2.1 | Bấm vào 1 chuyến | Có mã chuyến, trạng thái, tên và địa chỉ công trình, mác bê tông, khối lượng, **trạm trộn kèm địa chỉ**, biển số, **giờ giao dự kiến**, thời gian xuất phát, ghi chú điều phối | 🟢 | |
 | 1.2.2 | Bấm **Gọi** | Mở trình gọi điện với SĐT công trình | 🔵 | |
-| 1.2.3 | Bấm **Chỉ đường** (luồng 4.a) | Mở ứng dụng bản đồ ngoài tại tọa độ công trình | 🔵 | |
-| 1.2.4 | Bước 4: mở chuyến của Đơn A | Thẻ **bản đồ** (OpenStreetMap) có ghim công trình, biểu tượng trạm trộn, biểu tượng xe (nếu có vị trí), **đường màu tím** là tuyến gợi ý. Dòng dưới: "Tuyến gợi ý từ trạm trộn: x km, khoảng y phút" | 🔵 Cần internet trên máy ảo | |
-| 1.2.4b | Kéo/zoom bản đồ bằng 2 ngón (trên máy ảo: giữ Ctrl + kéo chuột để zoom) | Bản đồ di chuyển, màn hình không bị cuộn theo | 🔵 | |
-| 1.2.4c | Luồng 4.a: tắt mạng máy ảo (kéo thanh thông báo → tắt Wi-Fi/Data) rồi mở một chuyến **khác** | Dòng dưới bản đồ: "Không lấy được tuyến đường, đang hiển thị đường thẳng tham khảo…", vẫn dùng được nút **Chỉ đường** | 🔵 | |
-| 1.2.4d | Chuyến mẫu ban đầu khi trạm chưa có tọa độ (`UPDATE tram_tron SET vi_do=NULL`) | "Trạm trộn chưa có tọa độ nên chưa vẽ được tuyến đường…" | 🔵 | |
+| 1.2.3 | Bấm **Chỉ đường** | Mở **Google Maps** (hoặc trình duyệt nếu máy chưa có Google Maps) chỉ đường **từ trạm trộn đến công trình**. Nếu trạm chưa có tọa độ thì xuất phát từ vị trí hiện tại | 🔵 | |
+| 1.2.4 | Bước 4 + luồng 4.a: công trình chưa có tọa độ (`UPDATE cong_trinh SET vi_do=NULL, kinh_do=NULL`) rồi bấm Chỉ đường | Google Maps tìm theo **địa chỉ văn bản** của công trình. Nhớ đặt lại tọa độ (`vi_do=21.0045, kinh_do=105.7985`) | 🔵 | |
 | 1.2.5 | Luồng 2.b: xem hướng dẫn **"Cách test 1.2.5"** bên dưới | Hộp thoại **"Chuyến không còn hiệu lực"**, nút "Về danh sách" | 🟢 API trả 404 kèm thông báo | |
 | 1.2.6 | Tắt backend, vuốt tải lại (luồng 2.a) | Báo lỗi, vuốt lại để thử | 🔵 | |
 
@@ -287,7 +284,7 @@ Chạy liền một mạch để kiểm tra toàn bộ luồng:
 | Nhóm | Usecase | Backend | App | Còn thiếu |
 |------|---------|---------|-----|-----------|
 | Quản lý chuyến | Xem danh sách | ✅ lọc trạng thái + ngày | ✅ bộ lọc, dữ liệu lưu khi mất mạng, màn lỗi riêng | |
-| | Xem chi tiết | ✅ | ✅ bản đồ + tuyến gợi ý | |
+| | Xem chi tiết | ✅ | ✅ | Bản đồ dùng Google Maps bên ngoài (không nhúng trong app) |
 | | Nhận chuyến | ✅ có 5.b | ✅ | Offline (6.a) |
 | | Bắt đầu chuyến | ✅ | ✅ | |
 | | Hoàn thành chuyến | ✅ đúng 5.a | ✅ có tóm tắt | Offline (5.b) |

@@ -22,7 +22,6 @@ import com.example.myapplication.utils.ApiError;
 import com.example.myapplication.utils.LocationUtil;
 import com.example.myapplication.utils.SessionManager;
 import com.example.myapplication.utils.TrangThaiChuyenUtil;
-import com.example.myapplication.utils.TripMapController;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -52,8 +51,6 @@ public class TripDetailActivity extends AppCompatActivity {
     private View actionBar, cardTienDo;
     private View rowMac, rowKhoiLuong, rowTram, rowBienSo, rowThoiGianDuKien, rowThoiGianGiao, rowGhiChu;
     private View rowDaDen, rowGhiChuDen, rowKhoiLuongThucGiao, rowGhiChuGiaoHang, rowDonHangDaGiao, rowHoanThanh;
-
-    private TripMapController mapController;
 
     private long idChuyen;
     private ChuyenChiTiet chuyen;
@@ -86,7 +83,6 @@ public class TripDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TripMapController.init(this);
         setContentView(R.layout.activity_trip_detail);
         idChuyen = getIntent().getLongExtra(EXTRA_ID_CHUYEN, -1);
         if (idChuyen <= 0) { finish(); return; }
@@ -119,8 +115,6 @@ public class TripDetailActivity extends AppCompatActivity {
         rowDonHangDaGiao = findViewById(R.id.rowDonHangDaGiao);
         rowHoanThanh = findViewById(R.id.rowHoanThanh);
 
-        mapController = new TripMapController(findViewById(R.id.mapView), findViewById(R.id.tvMapInfo));
-
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         swipeRefresh.setOnRefreshListener(this::load);
         btnAction.setOnClickListener(v -> confirmAction());
@@ -136,20 +130,7 @@ public class TripDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (mapController != null) mapController.onResume();
         load();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mapController != null) mapController.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (mapController != null) mapController.onDestroy();
-        super.onDestroy();
     }
 
     private void load() {
@@ -192,10 +173,10 @@ public class TripDetailActivity extends AppCompatActivity {
                 ? "Không có" : c.getGhiChu());
 
         bindTienDo(c);
-        mapController.show(c, LocationUtil.viTriGanNhat(this));
 
         btnCall.setEnabled(c.getSdtCongTrinh() != null && !c.getSdtCongTrinh().isEmpty());
-        btnMap.setEnabled(c.getViDoCongTrinh() != null && c.getKinhDoCongTrinh() != null);
+        btnMap.setEnabled((c.getViDoCongTrinh() != null && c.getKinhDoCongTrinh() != null)
+                || (c.getDiaChiCongTrinh() != null && !c.getDiaChiCongTrinh().isEmpty()));
 
         int t = c.getTrangThai();
         if (t == TrangThaiChuyenUtil.CHO_NHAN) {
@@ -481,16 +462,28 @@ public class TripDetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Bước 4 "Xem thông tin chi tiết chuyến": mở Google Maps chỉ đường tới công trình.
+     * Điểm xuất phát là trạm trộn nếu có tọa độ, ngược lại Google Maps dùng vị trí hiện tại.
+     * Công trình chưa có tọa độ thì tìm theo địa chỉ văn bản.
+     */
     private void openMap() {
-        if (chuyen == null || chuyen.getViDoCongTrinh() == null || chuyen.getKinhDoCongTrinh() == null) return;
-        Uri uri = Uri.parse(String.format(Locale.US, "geo:0,0?q=%f,%f(%s)",
-                chuyen.getViDoCongTrinh(), chuyen.getKinhDoCongTrinh(),
-                Uri.encode(chuyen.getTenCongTrinh() == null ? "Công trình" : chuyen.getTenCongTrinh())));
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        if (chuyen == null) return;
+        String dich = chuyen.getViDoCongTrinh() != null && chuyen.getKinhDoCongTrinh() != null
+                ? String.format(Locale.US, "%f,%f", chuyen.getViDoCongTrinh(), chuyen.getKinhDoCongTrinh())
+                : chuyen.getDiaChiCongTrinh();
+        if (dich == null || dich.isEmpty()) return;
+        StringBuilder url = new StringBuilder("https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=")
+                .append(Uri.encode(dich));
+        if (chuyen.getViDoTram() != null && chuyen.getKinhDoTram() != null) {
+            url.append("&origin=").append(Uri.encode(String.format(Locale.US, "%f,%f",
+                    chuyen.getViDoTram(), chuyen.getKinhDoTram())));
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.toString()));
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         } else {
-            showError("Không tìm thấy ứng dụng bản đồ trên thiết bị");
+            showError("Không tìm thấy ứng dụng bản đồ hoặc trình duyệt trên thiết bị");
         }
     }
 

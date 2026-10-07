@@ -137,35 +137,6 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Mục 2.2.1 bước 4 "Xem chi tiết chuyến": vị trí công trình + tuyến đường gợi ý từ trạm trộn -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardMap"
-                    style="@style/Driver.Card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <org.osmdroid.views.MapView
-                            android:id="@+id/mapView"
-                            android:layout_width="match_parent"
-                            android:layout_height="240dp"/>
-
-                        <TextView
-                            android:id="@+id/tvMapInfo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="12dp"
-                            android:textColor="@color/colorTextSecondary"
-                            android:textSize="13sp"
-                            android:text="Đang tải bản đồ..."/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
                 <!-- Chi tiết -->
                 <com.google.android.material.card.MaterialCardView
                     style="@style/Driver.Card"

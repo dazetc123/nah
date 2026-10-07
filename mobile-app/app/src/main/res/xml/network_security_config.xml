@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!--
-        Android 7.0 (API 24) chưa có sẵn chứng chỉ gốc ISRG Root X1/X2 của Let's Encrypt,
-        nên các trang HTTPS dùng Let's Encrypt (dịch vụ tìm đường OSRM, ô bản đồ...) bị từ chối.
-        Thêm 2 chứng chỉ gốc công khai này cùng với chứng chỉ hệ thống.
-    -->
-    <base-config>
-        <trust-anchors>
-            <certificates src="system" />
-            <certificates src="@raw/isrg_root_x1" />
-            <certificates src="@raw/isrg_root_x2" />
-        </trust-anchors>
-    </base-config>
-    <!-- Backend chạy HTTP trên máy tính (emulator truy cập qua 10.0.2.2) -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">localhost</domain>
