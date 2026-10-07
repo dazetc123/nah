@@ -13,4 +13,7 @@ public interface NotificationService {
     void notifyOrderStatusChanged(Long idDH, String message);
 
     void notifyDriverAssignment(Long idChuyen, String tenTaiXe, String bienSo);
+
+    /** Mục 2.2.3 - "Báo cáo sự cố" bước 6: thông báo tức thời cho Nhân viên điều phối. */
+    void notifyDispatchersOfIncident(Long idSuCo, Long idChuyen, String loaiSuCo, boolean khanCap);
 }

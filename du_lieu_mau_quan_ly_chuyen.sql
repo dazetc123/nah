@@ -48,12 +48,13 @@ UPDATE xe SET idtx = (SELECT idtx FROM tai_xe WHERE idtk = (SELECT idtk FROM tai
 WHERE bien_so = '29C-123.45';
 
 -- 7) Đơn hàng (trạng thái 6 = đã phân bổ trạm, điều kiện để tạo chuyến)
-INSERT INTO don_hang (idkh, idct, ngay_dat, thoi_gian_giao, tong_khoi_luong, tong_tien, trang_thai, ghi_chu, id_tram)
+-- Cột version (khóa lạc quan @Version) phải có giá trị, nếu NULL thì Hoàn thành chuyến sẽ lỗi 500.
+INSERT INTO don_hang (idkh, idct, ngay_dat, thoi_gian_giao, tong_khoi_luong, tong_tien, trang_thai, ghi_chu, id_tram, version)
 VALUES ((SELECT idkh FROM khach_hang WHERE sdt = '0911111111'),
         (SELECT idct FROM cong_trinh WHERE sdt = '0922222222'),
         CURDATE(), DATE_ADD(NOW(), INTERVAL 2 HOUR), 8.5, 12750000, 6,
         CONVERT(UNHEX('4769616F207468E1BBAD206E676869E1BB876D') USING utf8mb4),
-        (SELECT id_tram FROM tram_tron WHERE sdt = '0933333333'));
+        (SELECT id_tram FROM tram_tron WHERE sdt = '0933333333'), 0);
 
 INSERT INTO chi_tiet_don_hang (iddh, idlbt, khoi_luong, don_gia, thanh_tien)
 VALUES ((SELECT iddh FROM don_hang ORDER BY iddh DESC LIMIT 1),

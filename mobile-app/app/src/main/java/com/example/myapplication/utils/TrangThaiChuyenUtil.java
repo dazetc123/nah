@@ -64,4 +64,22 @@ public final class TrangThaiChuyenUtil {
             return isoValue;
         }
     }
+
+    /**
+     * Khoảng thời gian giữa 2 mốc ISO-8601, dạng "\nThời gian thực hiện: 1 giờ 25 phút".
+     * Trả về chuỗi rỗng nếu thiếu mốc hoặc không đọc được.
+     */
+    public static String thoiLuong(String tuIso, String denIso) {
+        if (tuIso == null || denIso == null || tuIso.length() < 19 || denIso.length() < 19) return "";
+        try {
+            java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US);
+            long ms = f.parse(denIso.substring(0, 19)).getTime() - f.parse(tuIso.substring(0, 19)).getTime();
+            if (ms < 0) return "";
+            long phut = ms / 60000;
+            String text = phut >= 60 ? (phut / 60) + " giờ " + (phut % 60) + " phút" : phut + " phút";
+            return "\nThời gian thực hiện: " + text;
+        } catch (Exception e) {
+            return "";
+        }
+    }
 }

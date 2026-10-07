@@ -30,8 +30,25 @@ public class ChuyenChiTietResponse {
     private String tenTram;
     private String diaChiTram;
 
+    private LocalDateTime thoiGianGiao;        // thời gian giao dự kiến của đơn hàng
+    private LocalDateTime thoiGianNhan;
     private LocalDateTime thoiGianXuatPhat;
-    private LocalDateTime thoiGianDen;
+    private LocalDateTime thoiGianDen;         // thời điểm xác nhận đã đến công trình
+    private LocalDateTime thoiGianGiaoXong;
+    private LocalDateTime thoiGianHoanThanh;
+
+    // Xác nhận đã đến công trình
+    private Double khoangCachDen;
+    private String ghiChuDen;
+    private Boolean canKiemTraDen;
+    private Integer banKinhChoPhep;            // mét
+
+    // Xác nhận giao hàng thành công
+    private Double khoiLuongThucGiao;
+    private String ghiChuGiaoHang;
+    private String anhMinhChung;
+    private Double tongKhoiLuongDonHang;
+    private Double tongKhoiLuongDaGiao;
 
     private String bienSo;
     private String ghiChu;

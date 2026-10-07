@@ -52,6 +52,16 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnLogout).setOnClickListener(v -> confirmLogout());
 
         loadProfile();
+        xinQuyenThongBao();
+    }
+
+    /** Android 13+: cần quyền thông báo để hiện thông báo "Đang gửi vị trí GPS" của dịch vụ nền. */
+    private void xinQuyenThongBao() {
+        if (android.os.Build.VERSION.SDK_INT >= 33
+                && ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
+        }
     }
 
     private void setupRow(int rowId, int icon, int iconBg, int tint, String title, String subtitle, Class<?> target) {

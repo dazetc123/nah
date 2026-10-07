@@ -1,7 +1,5 @@
 package com.example.myapplication.models.trip;
 
-import java.time.LocalDateTime;
-
 /** Khớp với ChuyenDanhSachResponse bên backend - mỗi dòng trong danh sách chuyến. */
 public class ChuyenDanhSach {
     private long idChuyen;

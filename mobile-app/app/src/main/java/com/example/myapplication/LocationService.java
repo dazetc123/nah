@@ -146,13 +146,18 @@ public class LocationService extends Service {
             return START_NOT_STICKY;
         }
 
-        if (intent != null && intent.hasExtra(EXTRA_ID_CHUYEN)) {
+        if (intent == null) {
+            // Hệ thống khởi động lại dịch vụ (START_STICKY) sau khi bị dừng -> lấy lại chuyến đang gửi
+            long daLuu = getSharedPreferences(PREF, MODE_PRIVATE).getLong(KEY_ID_CHUYEN, -1);
+            idChuyen = daLuu > 0 ? daLuu : null;
+        } else if (intent.hasExtra(EXTRA_ID_CHUYEN)) {
             idChuyen = intent.getLongExtra(EXTRA_ID_CHUYEN, -1);
             if (idChuyen == -1) idChuyen = null;
         } else {
             idChuyen = null;
         }
         idChuyenDangStream = idChuyen;
+        luuChuyenDangGui(idChuyen);
 
         Notification notification = taoThongBao("Đang gửi vị trí GPS",
                 idChuyen != null ? "Đang cập nhật hành trình chuyến #" + idChuyen : "Chưa có chuyến nào đang giao");
@@ -192,7 +197,16 @@ public class LocationService extends Service {
         super.onDestroy();
     }
 
+    private static final String PREF = "LocationServiceState";
+    private static final String KEY_ID_CHUYEN = "id_chuyen";
+
+    private void luuChuyenDangGui(Long id) {
+        getSharedPreferences(PREF, MODE_PRIVATE).edit()
+                .putLong(KEY_ID_CHUYEN, id == null ? -1 : id).apply();
+    }
+
     private void dungDichVu() {
+        luuChuyenDangGui(null);
         // Hậu điều kiện "Tắt định vị": gửi bản ghi vị trí cuối cùng trước khi dừng hẳn.
         guiViTriHienTaiNeuCoTheGui();
         handler.postDelayed(() -> {

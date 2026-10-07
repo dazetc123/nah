@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mục 2.2.3 - Usecase "Xác nhận giao hàng thành công" -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorBackground">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Driver.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Xác nhận giao hàng"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView style="@style/Driver.SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1. KHỐI LƯỢNG THỰC GIAO"/>
+            <com.google.android.material.card.MaterialCardView style="@style/Driver.Card" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvKhoiLuongChuyen"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:textSize="14sp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilKhoiLuong"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Khối lượng thực giao (m³)">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etKhoiLuong"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"
+                            android:maxLines="1"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/tvThoiDiem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView style="@style/Driver.SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="2. GHI CHÚ"/>
+            <com.google.android.material.card.MaterialCardView style="@style/Driver.Card" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilGhiChu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:hint="Ghi chú (bắt buộc nếu giao vượt khối lượng)"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="255">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etGhiChu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLength="255"
+                        android:minLines="3"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView style="@style/Driver.SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="3. ẢNH MINH CHỨNG / CHỮ KÝ"/>
+            <com.google.android.material.card.MaterialCardView style="@style/Driver.Card" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                    <ImageView
+                        android:id="@+id/ivPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/bg_icon_indigo"
+                        android:contentDescription="Ảnh minh chứng giao hàng"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnChonAnh"
+                        style="@style/Driver.Button.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Chọn ảnh (JPG/PNG, tối đa 5 MB)"
+                        app:icon="@drawable/ic_camera"
+                        app:iconGravity="textStart"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorSurface"
+        android:elevation="12dp"
+        android:orientation="horizontal"
+        android:padding="12dp">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHuy"
+            style="@style/Driver.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Hủy"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnXacNhan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:backgroundTint="@color/colorSuccess"
+            android:text="Xác nhận giao hàng"
+            app:icon="@drawable/ic_check_circle"
+            app:iconGravity="textStart"/>
+    </LinearLayout>
+</LinearLayout>

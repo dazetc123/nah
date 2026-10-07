@@ -17,6 +17,11 @@ he-thong-betong/
   ./mvnw spring-boot:run
   ```
 - Mặc định chạy ở cổng `8080`.
+- **Biến môi trường** (không ghi mật khẩu thẳng vào `application.properties`):
+  `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET` (≥ 32 ký tự), `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+  (có thể đặt `dummy` nếu không dùng đăng nhập Google), `MAIL_USERNAME`, `MAIL_PASSWORD`.
+- Dữ liệu mẫu cho app Tài xế: `du_lieu_mau_quan_ly_chuyen.sql`.
+- Checklist test app Tài xế: [`docs/checklist-test-tai-xe.md`](docs/checklist-test-tai-xe.md).
 
 ## 2. Frontend Web (`frontend-web/`)
 - **Công nghệ**: React, Vite, TypeScript, Lucide Icons.

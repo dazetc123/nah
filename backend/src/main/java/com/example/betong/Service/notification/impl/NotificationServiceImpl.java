@@ -99,4 +99,13 @@ public class NotificationServiceImpl implements NotificationService {
                     HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
+
+    @Override
+    public void notifyDispatchersOfIncident(Long idSuCo, Long idChuyen, String loaiSuCo, boolean khanCap) {
+        if (khanCap) {
+            log.warn("[KHẨN] Sự cố #{} ({}) trên chuyến #{} - cần điều động xe thay thế", idSuCo, loaiSuCo, idChuyen);
+        } else {
+            log.info("Sự cố #{} ({}) trên chuyến #{} cần Nhân viên điều phối xử lý", idSuCo, loaiSuCo, idChuyen);
+        }
+    }
 }

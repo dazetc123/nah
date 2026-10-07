@@ -88,8 +88,10 @@ public class GpsWebSocketHandler extends TextWebSocketHandler {
             gui(session, ackLoi("Chuyến không tồn tại hoặc không được phân công cho bạn"));
             return;
         }
-        if (!Integer.valueOf(TrangThaiChuyen.DANG_GIAO).equals(chuyen.getTrangThai())) {
-            gui(session, ackLoi("Chuyến chưa ở trạng thái Đang giao, bỏ qua vị trí"));
+        // Gửi vị trí từ lúc Đang giao cho tới khi chuyến kết thúc (Đã đến, Đã giao hàng vẫn gửi)
+        Integer trangThai = chuyen.getTrangThai();
+        if (trangThai == null || trangThai < TrangThaiChuyen.DANG_GIAO || trangThai > TrangThaiChuyen.DA_GIAO_HANG) {
+            gui(session, ackLoi("Chuyến không còn đang thực hiện, bỏ qua vị trí"));
             return;
         }
 

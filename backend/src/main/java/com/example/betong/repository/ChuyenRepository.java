@@ -79,4 +79,33 @@ public interface ChuyenRepository extends JpaRepository<Chuyen, Long> {
             WHERE c.idChuyen = :idChuyen AND c.taiXe.idTX = :idTX
             """)
     java.util.Optional<Chuyen> timCuaTaiXe(@Param("idChuyen") Long idChuyen, @Param("idTX") Long idTX);
+
+    /** Luồng phụ 5.b "Nhận chuyến": tài xế đang có chuyến khác đã nhận nhưng chưa hoàn thành. */
+    @Query("""
+            SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Chuyen c
+            WHERE c.taiXe.idTX = :idTX AND c.idChuyen <> :idChuyen AND c.trangThai IN (1, 2, 3, 4)
+            """)
+    boolean taiXeCoChuyenKhacChuaXong(@Param("idTX") Long idTX, @Param("idChuyen") Long idChuyen);
+
+    /** "Hoàn thành chuyến": đơn hàng còn chuyến nào khác chưa hoàn thành thì chưa đóng đơn. */
+    @Query("""
+            SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Chuyen c
+            WHERE c.donHang.idDH = :idDH AND c.idChuyen <> :idChuyen AND c.trangThai IN (0, 1, 2, 3, 4)
+            """)
+    boolean donHangConChuyenKhacChuaXong(@Param("idDH") Long idDH, @Param("idChuyen") Long idChuyen);
+
+    /** "Xác nhận giao hàng thành công" bước 6: cộng dồn khối lượng đã giao của đơn hàng. */
+    @Query("""
+            SELECT COALESCE(SUM(c.khoiLuongThucGiao), 0) FROM Chuyen c
+            WHERE c.donHang.idDH = :idDH AND c.trangThai IN (4, 5)
+            """)
+    Double tongKhoiLuongDaGiao(@Param("idDH") Long idDH);
+
+    /** "Báo cáo sự cố": chuyến tài xế đang thực hiện (Đã nhận -> Đã giao hàng), mới nhất trước. */
+    @Query("""
+            SELECT c FROM Chuyen c
+            WHERE c.taiXe.idTX = :idTX AND c.trangThai IN (1, 2, 3, 4)
+            ORDER BY c.idChuyen DESC
+            """)
+    List<Chuyen> timChuyenDangThucHien(@Param("idTX") Long idTX);
 }

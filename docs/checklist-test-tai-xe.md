@@ -1,12 +1,23 @@
-# Checklist test app Tài xế trên Android Studio
+# Checklist test app Tài xế trên Android Studio (bản đầy đủ)
 
-Phạm vi: mục 2.2 và 2.3 trong báo cáo, gồm Quản lý chuyến, Gửi vị trí GPS và Cập nhật trạng thái.
-Cách dùng: mỗi dòng ghi **Pass** hoặc **Fail**. Nếu Fail thì ghi thêm điều bạn thấy được.
+Phạm vi: mục 2.2 và 2.3 trong báo cáo, gồm 12 usecase của tác nhân Tài xế:
+- **Quản lý chuyến:** xem danh sách, xem chi tiết, nhận, bắt đầu, hoàn thành.
+- **Gửi vị trí GPS:** bật định vị, tắt định vị, gửi tọa độ.
+- **Cập nhật trạng thái:** Đang giao, Đã đến công trình, Xác nhận giao hàng, Báo cáo sự cố.
 
-Ký hiệu:
-- ✅ Code đã có, cần test để xác nhận.
-- ⚠️ Code có nhưng khác kịch bản trong báo cáo. Nhiều khả năng sẽ **Fail** nếu test đúng theo kịch bản.
-- ❌ Chưa có code. Test chắc chắn **Fail**, cần làm thêm.
+Cách dùng: mỗi dòng ghi **Pass** hoặc **Fail**. Nếu Fail thì ghi thêm điều bạn thấy được (thông báo lỗi, ảnh chụp màn hình, log Logcat).
+
+Ký hiệu cột "Tình trạng":
+- 🟢 **API đã chạy thử:** backend đã được gọi thử trên MySQL/MariaDB thật và cho đúng kết quả. Bạn chỉ cần xác nhận phần giao diện trên app.
+- 🔵 **Chưa chạy thử:** code đã có nhưng chưa chạy thử được ở đây, ví dụ GPS thật, quyền Android, thông báo. Cần test kỹ.
+- ⚪ **Ngoài phạm vi:** báo cáo có nhắc nhưng chưa làm. Test sẽ **Fail**, bạn có thể ghi vào phần "Hạn chế" của báo cáo.
+
+Luồng trạng thái của một chuyến:
+
+```
+Chờ nhận(0) → Đã nhận(1) → Đang giao(2) → Đã đến công trình(3) → Đã giao hàng(4) → Hoàn thành(5)
+   [Nhận chuyến] [Bắt đầu chuyến] [Đã đến công trình] [Xác nhận giao hàng] [Hoàn thành chuyến]
+```
 
 ---
 
@@ -15,27 +26,51 @@ Ký hiệu:
 | # | Bước | Kết quả mong đợi | Pass/Fail |
 |---|------|------------------|-----------|
 | 0.1 | Chạy MySQL, tạo database `quanly_betong` | Kết nối được | |
-| 0.2 | `cd backend && ./mvnw spring-boot:run` | Log in ra `Started BetongApplication`, cổng 8080 | |
-| 0.3 | Mở `http://localhost:8080/swagger-ui.html` | Thấy nhóm API `/api/tai-xe/chuyen` | |
-| 0.4 | Tạo tài khoản tài xế `taixe01` (vai trò "Tài xế", có hồ sơ `tai_xe`) | Đăng nhập được | |
-| 0.5 | Chạy `du_lieu_mau_quan_ly_chuyen.sql` | Câu `SELECT` cuối trả về 1 chuyến có `trang_thai = 0` | |
-| 0.6 | Android Studio: mở thư mục `mobile-app`, chờ Gradle sync xong (cần cài SDK 37) | Build thành công, không lỗi | |
-| 0.7 | Chạy trên **emulator** (BASE_URL đang là `10.0.2.2:8080`). Nếu dùng máy thật thì sửa `ApiClient.BASE_URL` thành IP LAN của máy tính | App mở màn hình Đăng nhập | |
-| 0.8 | Đăng nhập `taixe01` | Vào được trang chủ, hiện tên tài xế | |
-| 0.9 | Đăng nhập bằng tài khoản không phải tài xế | Báo "Ứng dụng này chỉ dành cho tài khoản Tài xế" | |
+| 0.2 | Đặt biến môi trường cho backend (xem mục "Biến môi trường" bên dưới), rồi chạy `cd backend && ./mvnw spring-boot:run` | Log in ra `Started BetongApplication`. Bảng `chuyen` có thêm các cột mới (`thoi_gian_den`, `khoi_luong_thuc_giao`, `anh_minh_chung`, …) | |
+| 0.3 | Bảng `vai_tro` có đủ 4 vai trò; có tài khoản `taixe01` (vai trò Tài xế) và bản ghi `tai_xe` tương ứng | Đăng nhập được | |
+| 0.4 | Chạy `du_lieu_mau_quan_ly_chuyen.sql` (**bản mới**, đã có cột `version`) | Câu `SELECT` cuối trả về 1 chuyến có `trang_thai = 0` | |
+| 0.5 | Android Studio: mở `mobile-app`, chờ Gradle sync xong (cần SDK 37) | **Build thành công** | |
+| 0.6 | Chạy trên **emulator** (`10.0.2.2:8080`). Nếu dùng máy thật thì sửa `ApiClient.BASE_URL` thành IP LAN của máy tính | Mở màn hình Đăng nhập | |
+| 0.7 | Android 13 trở lên: mở trang chủ lần đầu | Hiện hộp thoại xin quyền **Thông báo**. Bấm Cho phép | |
 
-Lệnh SQL tiện dùng khi test:
+**Biến môi trường backend.** Mật khẩu và khóa không còn ghi thẳng trong `application.properties`:
+
+| Biến | Ví dụ | Ghi chú |
+|------|-------|---------|
+| `DB_USERNAME` | `hung` | Mặc định `root` |
+| `DB_PASSWORD` | *(mật khẩu MySQL của bạn)* | Mặc định để trống |
+| `JWT_SECRET` | chuỗi ≥ 32 ký tự | Có giá trị mặc định để chạy thử trên máy cá nhân |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | `dummy` | Bắt buộc phải có giá trị thì backend mới khởi động, kể cả khi không dùng đăng nhập Google |
+
+Trong IntelliJ: **Run → Edit Configurations → Environment variables**.
+
+**SQL tiện dùng khi test:**
 
 ```sql
--- Đặt lại chuyến về Chờ nhận để test lại từ đầu
-UPDATE chuyen SET trang_thai = 0, thoi_gian_xuat_phat = NULL, thoi_gian_den = NULL WHERE id_chuyen = <id>;
--- Xem trạng thái chuyến
-SELECT id_chuyen, trang_thai, thoi_gian_xuat_phat, thoi_gian_den FROM chuyen ORDER BY id_chuyen DESC;
--- Xem các điểm GPS đã gửi lên
+-- Đặt lại 1 chuyến về Chờ nhận để test lại từ đầu
+UPDATE chuyen SET trang_thai = 0, thoi_gian_nhan = NULL, thoi_gian_xuat_phat = NULL, thoi_gian_den = NULL,
+  vi_do_den = NULL, kinh_do_den = NULL, khoang_cach_den = NULL, ghi_chu_den = NULL, can_kiem_tra_den = NULL,
+  khoi_luong_thuc_giao = NULL, thoi_gian_giao_xong = NULL, ghi_chu_giao_hang = NULL, anh_minh_chung = NULL,
+  thoi_gian_hoan_thanh = NULL
+WHERE id_chuyen = <id>;
+
+-- Tạo thêm 1 chuyến Chờ nhận cùng đơn hàng (để test luồng 5.b và đơn nhiều chuyến)
+INSERT INTO chuyen (iddh, id_xe, idtx, id_tram, khoi_luong, trang_thai)
+SELECT iddh, id_xe, idtx, id_tram, 4, 0 FROM chuyen ORDER BY id_chuyen LIMIT 1;
+
+-- Xem kết quả
+SELECT id_chuyen, trang_thai, khoang_cach_den, can_kiem_tra_den, khoi_luong_thuc_giao FROM chuyen;
 SELECT * FROM vi_tri_gps ORDER BY id_vi_tri DESC LIMIT 20;
+SELECT id_su_co, id_chuyen, loai_su_co, muc_do_uu_tien, trang_thai, dia_chi_hu FROM su_co ORDER BY id_su_co DESC;
+SELECT iddh, trang_thai FROM don_hang;  -- 4 = Hoàn thành
 ```
 
-Giả lập GPS trên emulator: bấm **⋯ (Extended controls) → Location**, nhập tọa độ (ví dụ `21.0045, 105.7985`) rồi bấm **Set location**. Có thể bấm **Routes** để cho xe chạy theo tuyến.
+**Giả lập GPS trên emulator:** bấm **⋯ (Extended controls) → Location**, nhập tọa độ rồi bấm **Set location**.
+- Tọa độ công trình mẫu: `21.0045, 105.7985`.
+- Trong bán kính 500 m: `21.0050, 105.7990` (cách khoảng 76 m).
+- Ngoài bán kính: `21.0300, 105.8500` (cách khoảng 6 km).
+
+> Mẹo: sau khi đổi vị trí, mở Google Maps trên emulator một lần để thiết bị ghi nhận vị trí mới.
 
 ---
 
@@ -43,112 +78,178 @@ Giả lập GPS trên emulator: bấm **⋯ (Extended controls) → Location**, 
 
 ### 1.1 Xem danh sách chuyến được phân công
 
-| # | Thao tác | Mong đợi | | Pass/Fail |
-|---|----------|----------|---|-----------|
-| 1.1.1 | Trang chủ → **Lịch trình** | Hiện danh sách chuyến của `taixe01` | ✅ | |
-| 1.1.2 | Kiểm tra từng dòng trong danh sách | Có mã chuyến, tên công trình, khối lượng, giờ giao dự kiến, biển số, nhãn trạng thái có màu | ✅ | |
-| 1.1.3 | Vuốt xuống để tải lại | Danh sách được làm mới | ✅ | |
-| 1.1.4 | Xóa hết chuyến của tài xế trong DB rồi mở lại | Hiện thông báo "chưa có chuyến" | ✅ | |
-| 1.1.5 | Tắt backend rồi mở danh sách (luồng 3.a) | Hiện Snackbar "Không kết nối được máy chủ…" | ✅ | |
-| 1.1.6 | Luồng 3.a: hiển thị **dữ liệu đã lưu tạm** khi mất mạng | Vẫn thấy danh sách cũ | ❌ App chưa lưu cache | |
-| 1.1.7 | Bước 5: **lọc theo trạng thái / theo ngày** | Có bộ lọc trên màn hình | ❌ Backend có tham số `trangThai` nhưng app chưa có giao diện lọc, chưa lọc theo ngày | |
-| 1.1.8 | Luồng 4.b: token hết hạn (xóa token hoặc đợi hết hạn) | Bị đưa về màn hình Đăng nhập | ⚠️ Trang chủ có xử lý 401, nhưng màn Lịch trình chỉ hiện "mã lỗi 401" | |
-| 1.1.9 | Đăng nhập tài xế khác | Không thấy chuyến của `taixe01` | ✅ | |
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 1.1.1 | Trang chủ → **Lịch trình** | Hiện danh sách chuyến của `taixe01` | 🟢 | |
+| 1.1.2 | Kiểm tra từng dòng | Có mã chuyến, tên công trình, khối lượng, giờ giao dự kiến, biển số, nhãn trạng thái có màu | 🟢 | |
+| 1.1.3 | Vuốt xuống để tải lại | Danh sách được làm mới | 🔵 | |
+| 1.1.4 | Tài xế không có chuyến nào | Hiện thông báo "chưa có chuyến" | 🔵 | |
+| 1.1.5 | Tắt backend rồi tải lại (luồng 3.a) | Snackbar "Không kết nối được máy chủ…" | 🔵 | |
+| 1.1.6 | Luồng 3.a: hiển thị dữ liệu lưu tạm khi mất mạng | | ⚪ | |
+| 1.1.7 | Bước 5: lọc theo trạng thái / ngày | | ⚪ Backend có tham số `trangThai`, app chưa có giao diện lọc | |
+| 1.1.8 | Đăng nhập tài xế khác | Không thấy chuyến của `taixe01` | 🟢 | |
 
 ### 1.2 Xem thông tin chi tiết chuyến
 
-| # | Thao tác | Mong đợi | | Pass/Fail |
-|---|----------|----------|---|-----------|
-| 1.2.1 | Bấm vào 1 chuyến | Hiện mã chuyến, trạng thái, tên và địa chỉ công trình, mác bê tông, khối lượng, trạm trộn, biển số, ghi chú điều phối | ✅ | |
-| 1.2.2 | Bấm **Gọi** | Mở trình gọi điện với SĐT công trình (`0922222222`) | ✅ | |
-| 1.2.3 | Bấm **Bản đồ** | Mở ứng dụng bản đồ ngoài tại tọa độ công trình (đây là luồng 4.a) | ✅ | |
-| 1.2.4 | Bước 4: bản đồ **nhúng trong app** kèm tuyến đường từ trạm trộn | | ❌ Chưa có, app chỉ mở bản đồ ngoài | |
-| 1.2.5 | Kiểm tra dòng "thời gian giao dự kiến" | Có hiển thị | ⚠️ Màn chi tiết đang hiện "Thời gian xuất phát", chưa hiện giờ giao dự kiến. Cũng chưa hiện địa chỉ trạm trộn | |
-| 1.2.6 | Luồng 2.b: đang mở chi tiết thì đổi `idtx` của chuyến sang tài xế khác, rồi vuốt tải lại | Báo "chuyến không còn hiệu lực" và quay lại danh sách | ⚠️ Chỉ hiện "mã lỗi 404" | |
-| 1.2.7 | Tắt backend rồi vuốt tải lại (luồng 2.a) | Báo lỗi, cho thử lại | ✅ | |
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 1.2.1 | Bấm vào 1 chuyến | Có mã chuyến, trạng thái, tên và địa chỉ công trình, mác bê tông, khối lượng, **trạm trộn kèm địa chỉ**, biển số, **giờ giao dự kiến**, thời gian xuất phát, ghi chú điều phối | 🟢 | |
+| 1.2.2 | Bấm **Gọi** | Mở trình gọi điện với SĐT công trình | 🔵 | |
+| 1.2.3 | Bấm **Chỉ đường** (luồng 4.a) | Mở ứng dụng bản đồ ngoài tại tọa độ công trình | 🔵 | |
+| 1.2.4 | Bước 4: bản đồ nhúng trong app kèm tuyến đường | | ⚪ | |
+| 1.2.5 | Luồng 2.b: đang mở chi tiết thì đổi `idtx` của chuyến trong DB sang tài xế khác, rồi vuốt tải lại | Hộp thoại **"Chuyến không còn hiệu lực"**, nút "Về danh sách" | 🟢 API trả 404 kèm thông báo | |
+| 1.2.6 | Tắt backend, vuốt tải lại (luồng 2.a) | Báo lỗi, vuốt lại để thử | 🔵 | |
 
 ### 1.3 Nhận chuyến (Chờ nhận → Đã nhận)
 
-| # | Thao tác | Mong đợi | | Pass/Fail |
-|---|----------|----------|---|-----------|
-| 1.3.1 | Mở chuyến `trang_thai = 0` | Nút **Nhận chuyến** | ✅ | |
-| 1.3.2 | Bấm → **Hủy** (luồng 4.a) | Đóng hộp thoại, trạng thái giữ nguyên | ✅ | |
-| 1.3.3 | Bấm → **Xác nhận** | Báo "Cập nhật trạng thái thành công", nhãn đổi sang "Đã nhận", DB `trang_thai = 1` | ✅ | |
-| 1.3.4 | Luồng 5.a: mở chi tiết, đổi `trang_thai` trong DB sang 1, rồi bấm Nhận | Báo chuyến không còn khả dụng | ⚠️ Backend trả 409 đúng, nhưng app chỉ hiện "mã lỗi 409" | |
-| 1.3.5 | Luồng 5.b: tài xế đang có chuyến khác chưa hoàn thành | Bị chặn, không nhận thêm được | ❌ Backend chưa kiểm tra | |
-| 1.3.6 | Luồng 6.a: bật chế độ máy bay rồi bấm Nhận | Yêu cầu được lưu tạm và gửi lại khi có mạng | ❌ Chưa có hàng đợi offline | |
-| 1.3.7 | Bước 6: lưu thời điểm nhận chuyến | | ❌ Bảng `chuyen` chưa có cột này | |
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 1.3.1 | Mở chuyến Chờ nhận | Nút **Nhận chuyến**; **không** có nút "Sự cố" | 🔵 | |
+| 1.3.2 | Bấm → **Hủy** (4.a) | Trạng thái giữ nguyên | 🔵 | |
+| 1.3.3 | Bấm → **Xác nhận** | Nhãn "Đã nhận", nút đổi thành **Bắt đầu chuyến**, xuất hiện nút **Sự cố**. DB `trang_thai = 1`, có `thoi_gian_nhan` | 🟢 | |
+| 1.3.4 | Luồng 5.a: mở chi tiết, đổi `trang_thai` trong DB sang 1, bấm Nhận | Snackbar "Chuyến không còn ở trạng thái Chờ nhận", màn hình tự tải lại | 🟢 API trả 409 | |
+| 1.3.5 | Luồng 5.b: đã nhận 1 chuyến, mở chuyến Chờ nhận thứ hai và bấm Nhận | Snackbar **"Bạn đang có chuyến chưa hoàn thành, không thể nhận thêm chuyến"** | 🟢 | |
+| 1.3.6 | Luồng 6.a: chế độ máy bay → bấm Nhận | Lưu tạm, gửi lại khi có mạng | ⚪ Hiện chỉ báo lỗi mạng | |
 
 ### 1.4 Bắt đầu chuyến (Đã nhận → Đang giao)
 
-| # | Thao tác | Mong đợi | | Pass/Fail |
-|---|----------|----------|---|-----------|
-| 1.4.1 | Gỡ quyền vị trí của app (Settings → Apps), mở chuyến Đã nhận → **Bắt đầu chuyến** | Hiện hộp thoại xin quyền | ✅ | |
-| 1.4.2 | Từ chối quyền (luồng 4.a) | Báo "Cần cấp quyền vị trí…", không bắt đầu chuyến | ✅ | |
-| 1.4.3 | Tắt Location của emulator → bấm Bắt đầu (luồng 3.a) | Nhắc bật GPS | ✅ | |
-| 1.4.4 | Cấp quyền, bật GPS → Xác nhận | Trạng thái "Đang giao", DB có `thoi_gian_xuat_phat`, thanh thông báo hiện "Đang gửi vị trí GPS" | ✅ | |
-| 1.4.5 | Đợi khoảng 20 giây, đổi tọa độ emulator 2–3 lần | Bảng `vi_tri_gps` có thêm bản ghi, mỗi bản ghi cách nhau khoảng 7 giây | ✅ | |
-| 1.4.6 | Android 13 trở lên: kiểm tra thanh thông báo | Thông báo dịch vụ GPS hiển thị | ⚠️ App chưa xin quyền `POST_NOTIFICATIONS`, nên thông báo có thể bị ẩn. Dịch vụ vẫn chạy | |
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 1.4.1 | Gỡ quyền vị trí của app → bấm **Bắt đầu chuyến** | Hộp thoại xin quyền vị trí | 🔵 | |
+| 1.4.2 | Từ chối quyền (4.a) | "Cần cấp quyền vị trí…", không bắt đầu chuyến | 🔵 | |
+| 1.4.3 | Tắt Location của emulator → bấm Bắt đầu (3.a) | "Vui lòng bật GPS…" | 🔵 | |
+| 1.4.4 | Cấp quyền, bật GPS → Xác nhận | Trạng thái "Đang giao", nút đổi thành **Đã đến công trình**, có thông báo "Đang gửi vị trí GPS". DB có `thoi_gian_xuat_phat` | 🟢 API / 🔵 thông báo | |
+| 1.4.5 | Đợi khoảng 20 giây, đổi tọa độ 2–3 lần | `vi_tri_gps` có thêm bản ghi, khoảng 7 giây một bản ghi | 🟢 WebSocket / 🔵 trên máy | |
 
-### 1.5 Hoàn thành chuyến
+### 1.5 Hoàn thành chuyến (Đã giao hàng → Hoàn thành)
 
-| # | Thao tác | Mong đợi theo báo cáo | | Pass/Fail |
-|---|----------|----------------------|---|-----------|
-| 1.5.1 | Chuyến "Đang giao" có hiện nút **Hoàn thành chuyến** không? | Báo cáo yêu cầu phải ở trạng thái **Đã giao hàng** mới được hoàn thành (luồng 5.a) | ⚠️ App và backend đang cho hoàn thành ngay từ "Đang giao", bỏ qua 2 bước "Đã đến" và "Đã giao hàng" | |
-| 1.5.2 | Bấm → hộp thoại xác nhận | Có tóm tắt khối lượng đã giao và thời gian thực hiện | ⚠️ Chỉ có câu hỏi xác nhận, chưa có tóm tắt | |
-| 1.5.3 | Bấm Hủy (luồng 4.a) | Trạng thái giữ nguyên | ✅ | |
-| 1.5.4 | Xác nhận | Trạng thái "Hoàn thành" (DB = 5), nút hành động biến mất, thông báo GPS tắt | ✅ | |
-| 1.5.5 | Kiểm tra DB | `tai_xe.trang_thai = 1`, `xe.trang_thai = 1`, có `thoi_gian_den` | ✅ | |
-| 1.5.6 | Đơn hàng có nhiều chuyến: hoàn thành 1 chuyến | Đơn hàng chưa được đóng | ⚠️ Code đang đặt đơn hàng thành Hoàn thành ngay khi 1 chuyến xong | |
-| 1.5.7 | Luồng 5.b: hoàn thành khi mất mạng | Lưu tạm và đồng bộ lại sau | ❌ | |
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 1.5.1 | Chuyến ở Đang giao hoặc Đã đến | **Không** có nút Hoàn thành (nút lúc này là "Đã đến công trình" hoặc "Xác nhận giao hàng") | 🔵 | |
+| 1.5.2 | Luồng 5.a: gọi thẳng API hoàn thành khi chưa giao hàng (Swagger: `POST /api/tai-xe/chuyen/{id}/hoan-thanh`) | 409 "Chuyến chưa được xác nhận giao hàng thành công…" | 🟢 | |
+| 1.5.3 | Chuyến Đã giao hàng → **Hoàn thành chuyến** | Hộp thoại có **tóm tắt**: khối lượng đã giao, giờ xuất phát, giờ giao xong, thời gian thực hiện | 🔵 | |
+| 1.5.4 | Bấm **Hủy** (4.a) | Trạng thái giữ nguyên | 🔵 | |
+| 1.5.5 | Bấm **Hoàn thành** | Nhãn "Hoàn thành", thanh nút biến mất, thông báo GPS tắt. Thẻ "Tiến độ giao hàng" có dòng "Hoàn thành lúc" | 🟢 API / 🔵 GPS | |
+| 1.5.6 | Kiểm tra DB | `tai_xe.trang_thai = 1`, `xe.trang_thai = 1`, có `thoi_gian_hoan_thanh` | 🟢 | |
+| 1.5.7 | Đơn hàng có 2 chuyến: hoàn thành chuyến thứ nhất | `don_hang.trang_thai` **chưa** thành 4. Hoàn thành chuyến cuối thì mới thành 4 | 🟢 Unit test | |
+| 1.5.8 | Luồng 5.b: hoàn thành khi mất mạng | | ⚪ | |
 
 ---
 
 ## 2. Gửi vị trí GPS (2.2.2)
 
-| # | Thao tác | Mong đợi | | Pass/Fail |
-|---|----------|----------|---|-----------|
-| 2.1 | Trang chủ → **Gửi vị trí GPS** → bật công tắc (không có chuyến Đang giao) | Hiện "Đã bật định vị, chưa có chuyến đang giao" và tọa độ hiện tại; DB không có bản ghi mới | ✅ | |
-| 2.2 | Bật khi chưa có quyền → từ chối (luồng 3.a) | Báo không thể bật, công tắc trở về tắt | ✅ | |
-| 2.3 | Bật khi GPS thiết bị đang tắt (luồng 3.b) | Hộp thoại "GPS đang tắt", có nút "Mở cài đặt" | ✅ | |
-| 2.4 | Có chuyến Đang giao → bật | Hiện "Đang gửi vị trí cho chuyến #…", tọa độ và tốc độ cập nhật | ✅ | |
-| 2.5 | Tắt công tắc khi chuyến đang giao (luồng 3.a của Tắt định vị) | Cảnh báo không được tắt, công tắc vẫn bật | ✅ | |
-| 2.6 | Tắt khi không có chuyến → **Hủy** (luồng 3.b) | Công tắc vẫn bật, tiếp tục định vị | ✅ | |
-| 2.7 | Tắt → **Xác nhận** | Dịch vụ dừng, thông báo biến mất | ✅ | |
-| 2.8 | Đang gửi thì bật chế độ máy bay khoảng 30 giây, rồi tắt (luồng 3.a của Gửi tọa độ) | Sau khi có mạng lại, DB nhận bù các điểm bị lỡ | ✅ Hàng đợi chỉ nằm trong RAM, tối đa 50 điểm | |
-| 2.9 | Vuốt tắt app khỏi danh sách đa nhiệm trong lúc đang giao | Vẫn tiếp tục gửi vị trí | ⚠️ Khi hệ thống khởi động lại dịch vụ, `idChuyen` bị mất, nên có thể ngừng gửi mà không báo | |
-| 2.10 | Đặt tọa độ emulator `0,0` (luồng 4.a) | Server bỏ qua điểm này và ghi log | ✅ | |
-| 2.11 | Mất tín hiệu GPS (luồng 1.a) | Cảnh báo "tín hiệu GPS yếu" | ❌ | |
-| 2.12 | Bước 5–6: màn hình theo dõi của điều phối (web) cập nhật vị trí xe | Bản đồ trên web di chuyển theo xe | ⚠️ Server chỉ lưu DB, chưa đẩy realtime. Cần kiểm tra trang theo dõi trên web có tự tải lại không | |
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 2.1 | Trang chủ → **Gửi vị trí GPS** → bật công tắc khi không có chuyến đang thực hiện | "Đã bật định vị, chưa có chuyến đang giao", hiện tọa độ; DB không có bản ghi mới | 🔵 | |
+| 2.2 | Bật khi chưa có quyền → từ chối (3.a) | Báo không thể bật, công tắc về tắt | 🔵 | |
+| 2.3 | Bật khi GPS thiết bị tắt (3.b) | Hộp thoại "GPS đang tắt" + nút "Mở cài đặt" | 🔵 | |
+| 2.4 | Có chuyến Đang giao / Đã đến / Đã giao hàng → bật | "Đang gửi vị trí cho chuyến #…" | 🔵 | |
+| 2.5 | **Sau khi bấm "Đã đến công trình"**, đợi 20 giây | Vẫn tiếp tục có bản ghi `vi_tri_gps` (gửi tới khi chuyến kết thúc) | 🟢 WebSocket nhận điểm khi chuyến ở trạng thái Đã đến | |
+| 2.6 | Tắt công tắc khi chuyến đang thực hiện (3.a của Tắt định vị) | Cảnh báo "…đang thực hiện, không thể tắt định vị…", công tắc vẫn bật | 🔵 | |
+| 2.7 | Tắt khi không có chuyến → **Hủy** (3.b) | Công tắc vẫn bật | 🔵 | |
+| 2.8 | Tắt → **Xác nhận** | Dịch vụ dừng, thông báo biến mất | 🔵 | |
+| 2.9 | Đang gửi thì bật chế độ máy bay khoảng 30 giây rồi tắt (3.a của Gửi tọa độ) | DB nhận bù các điểm bị lỡ (tối đa 50 điểm, lưu trong RAM) | 🔵 | |
+| 2.10 | Đang gửi thì vuốt tắt app khỏi đa nhiệm | Dịch vụ vẫn gửi đúng chuyến (`idChuyen` được lưu lại khi dịch vụ khởi động lại) | 🔵 | |
+| 2.11 | Đặt tọa độ `0,0` (4.a) | Server bỏ qua điểm, ghi log cảnh báo | 🟢 | |
+| 2.12 | Gửi vị trí cho chuyến đã Hoàn thành | Server từ chối: "Chuyến không còn đang thực hiện, bỏ qua vị trí" | 🟢 | |
+| 2.13 | Luồng 1.a: cảnh báo tín hiệu GPS yếu | | ⚪ | |
+| 2.14 | Bước 5–6: bản đồ theo dõi trên web cập nhật realtime | | ⚪ Server lưu DB, chưa đẩy realtime sang web | |
 
 ---
 
 ## 3. Cập nhật trạng thái (2.2.3)
 
-| # | Usecase | | Pass/Fail |
-|---|---------|---|-----------|
-| 3.1 | **Cập nhật trạng thái Đang giao** | ✅ Đang gộp chung với nút "Bắt đầu chuyến" (cùng chuyển Đã nhận → Đang giao). Nên ghi rõ điều này trong báo cáo | |
-| 3.2 | **Xác nhận đã đến công trình** (Đang giao → Đã đến, so sánh tọa độ với bán kính công trình) | ❌ Chưa có API và chưa có nút trên app | |
-| 3.3 | **Xác nhận giao hàng thành công** (form khối lượng thực giao và ảnh minh chứng → Đã giao hàng) | ❌ Chưa có API, chưa có màn hình | |
-| 3.4 | **Báo cáo sự cố**: mở form từ trang chủ, bỏ trống để thử validate, gửi | ⚠️ Giao diện và validate có, nhưng **chưa gửi lên server** (`// TODO`). Form chưa có loại sự cố, mức độ ưu tiên và chưa gắn với mã chuyến như báo cáo mô tả | |
+### 3.1 Cập nhật trạng thái Đang giao
+
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 3.1.1 | Giống mục 1.4: nút **Bắt đầu chuyến** chuyển chuyến từ Đã nhận sang Đang giao | Như 1.4.4. Trong báo cáo nên ghi rõ usecase này dùng chung nút với "Bắt đầu chuyến" | 🟢 | |
+| 3.1.2 | Luồng 3.a: chuyển trạng thái không hợp lệ (đổi DB sang 5 rồi bấm) | Snackbar báo lỗi, tự tải lại | 🟢 API trả 409 | |
+
+### 3.2 Xác nhận đã đến công trình (Đang giao → Đã đến công trình) — **MỚI**
+
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 3.2.1 | Chuyến Đang giao | Nút chính là **Đã đến công trình** | 🔵 | |
+| 3.2.2 | Đặt tọa độ emulator **trong 500 m** (`21.0050, 105.7990`) → bấm → Xác nhận | Snackbar "Đã xác nhận đến công trình". Nhãn "Đã đến công trình". Thẻ "Tiến độ giao hàng" hiện "Đã đến công trình: dd/MM HH:mm · cách ~76 m" | 🟢 | |
+| 3.2.3 | Kiểm tra DB | `trang_thai = 3`, có `thoi_gian_den`, `vi_do_den`, `kinh_do_den`, `can_kiem_tra_den = 0` | 🟢 | |
+| 3.2.4 | Luồng 2.a: đặt tọa độ **ngoài 500 m** (`21.03, 105.85`) → bấm → Xác nhận | Hộp thoại **"Cần ghi chú để xác nhận"**: "Bạn đang cách công trình khoảng 6051 m (ngoài bán kính 500 m)…" | 🟢 | |
+| 3.2.5 | Để trống ghi chú → **Gửi xác nhận** | Báo lỗi "Vui lòng nhập ghi chú", hộp thoại không đóng | 🔵 | |
+| 3.2.6 | Nhập ghi chú → Gửi | Thành công, Snackbar "(điều phối sẽ kiểm tra lại vị trí)". Chi tiết hiện "· cần kiểm tra" và dòng "Ghi chú khi đến". DB `can_kiem_tra_den = 1` | 🟢 | |
+| 3.2.7 | Luồng 2.b: gỡ quyền vị trí → bấm → từ chối quyền | Hộp thoại ghi chú "Không lấy được vị trí hiện tại…" → nhập ghi chú → thành công, cần kiểm tra | 🟢 API / 🔵 app | |
+| 3.2.8 | Luồng 2.b: emulator chưa có vị trí nào (cold boot, chưa Set location) | Như 3.2.7 | 🔵 | |
+| 3.2.9 | Luồng 3.a: chế độ máy bay → bấm | Snackbar lỗi mạng (chưa lưu tạm) | 🔵 / ⚪ phần lưu tạm | |
+
+### 3.3 Xác nhận giao hàng thành công (Đã đến → Đã giao hàng) — **MỚI**
+
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 3.3.1 | Chuyến Đã đến công trình → bấm **Xác nhận giao hàng** | Mở màn **Xác nhận giao hàng** (phụ đề "Chuyến #…"): khối lượng của chuyến, ô khối lượng thực giao (điền sẵn), thời điểm kết thúc, ghi chú, chọn ảnh | 🔵 | |
+| 3.3.2 | Luồng 4.a: xóa trống ô khối lượng → Xác nhận | Lỗi đỏ "Vui lòng nhập khối lượng thực giao lớn hơn 0" | 🟢 API / 🔵 app | |
+| 3.3.3 | Nhập `0` → Xác nhận | Như 3.3.2 | 🟢 | |
+| 3.3.4 | Luồng 4.b: nhập **lớn hơn** khối lượng chuyến (ví dụ 9 khi chuyến là 8.5), không ghi chú | Lỗi ở ô ghi chú: "Khối lượng vượt 8.5 m³ của chuyến, vui lòng nhập lý do" | 🟢 API trả 422 / 🔵 app | |
+| 3.3.5 | Nhập ghi chú → Xác nhận | Thành công | 🟢 | |
+| 3.3.6 | Chọn ảnh JPG/PNG → Xác nhận | Có ảnh xem trước. Sau khi gửi, DB `anh_minh_chung` là URL `/uploads/giao-hang/...`, mở được trên trình duyệt | 🟢 | |
+| 3.3.7 | Chọn ảnh lớn hơn 5 MB hoặc ảnh dạng HEIC | Báo "Ảnh vượt quá 5 MB…" hoặc "Chỉ hỗ trợ ảnh JPG, PNG hoặc WEBP" | 🟢 API / 🔵 app | |
+| 3.3.8 | Gửi hợp lệ | Quay về chi tiết, Snackbar "Xác nhận giao hàng thành công". Nhãn "Đã giao hàng", nút đổi thành **Hoàn thành chuyến**. Thẻ tiến độ có "Khối lượng thực giao" và "Đơn hàng đã giao x / y m³" | 🟢 | |
+| 3.3.9 | Bước 6: kiểm tra log backend | Có dòng "Chuyến #… đã giao 8.5 m³. Đơn hàng đã giao 8.5/8.5 m³" | 🟢 | |
+| 3.3.10 | Bấm **Hủy** trên màn xác nhận | Quay lại, trạng thái giữ nguyên | 🔵 | |
+| 3.3.11 | Luồng 5.a: mất mạng khi gửi | Snackbar lỗi mạng, nút bấm được lại | 🔵 / ⚪ phần lưu tạm | |
+
+### 3.4 Báo cáo sự cố — **MỚI** (trước đây chỉ có giao diện)
+
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 3.4.1 | Chi tiết chuyến (Đã nhận → Đã giao hàng) → nút **Sự cố** | Mở form, dòng đầu hiện "Chuyến #…" | 🔵 | |
+| 3.4.2 | Trang chủ → **Báo cáo sự cố** | Dòng đầu hiện "Chuyến đang thực hiện (hệ thống tự xác định)" | 🔵 | |
+| 3.4.3 | Form có đủ các trường | Loại sự cố (Hỏng xe / Tai nạn / Tắc đường kéo dài / Công trình chưa sẵn sàng / Khác), Mức độ ưu tiên (Thấp / **Trung bình** mặc định / Cao), vị trí GPS, mô tả, ảnh | 🔵 | |
+| 3.4.4 | Đã có quyền vị trí | Ô vị trí tự điền tọa độ khi mở form; bấm "Lấy vị trí hiện tại" để cập nhật | 🔵 | |
+| 3.4.5 | Luồng 4.a: không chọn loại, không nhập mô tả → Gửi | Lỗi "Vui lòng chọn loại sự cố" và "Vui lòng mô tả sự cố" | 🟢 API / 🔵 app | |
+| 3.4.6 | Chọn **Hỏng xe** hoặc **Tai nạn** | Mức độ tự chuyển sang **Cao** (luồng 6.a) | 🟢 API / 🔵 app | |
+| 3.4.7 | Điền đủ + ảnh → **Gửi báo cáo** | Hộp thoại "Đã gửi báo cáo sự cố": mã sự cố, chuyến, loại, mức độ, **Trạng thái xử lý: Mới tiếp nhận** | 🟢 | |
+| 3.4.8 | Kiểm tra DB `su_co` | Có bản ghi gắn `id_chuyen`, `id_xe`, `idtx`, `dia_chi_hu` = tọa độ, `muc_do_uu_tien`, `trang_thai = 0`, URL ảnh | 🟢 | |
+| 3.4.9 | Bước 6: log backend | Có "Sự cố #… cần Nhân viên điều phối xử lý", hoặc "[KHẨN] … cần điều động xe thay thế" nếu là Hỏng xe / Tai nạn | 🟢 | |
+| 3.4.10 | Từ trang chủ khi **không** có chuyến đang thực hiện → Gửi | Snackbar "Bạn không có chuyến nào đang thực hiện để báo cáo sự cố" | 🟢 | |
+| 3.4.11 | Đã nhập dữ liệu rồi bấm Back | Hỏi "Thoát báo cáo?" | 🔵 | |
+| 3.4.12 | Luồng 4.b: mất mạng khi gửi | Snackbar lỗi mạng | 🔵 / ⚪ phần lưu tạm | |
+| 3.4.13 | Thông báo đẩy (push) thật tới điều phối | | ⚪ Hệ thống hiện chỉ ghi log, giống các thông báo khác của dự án | |
 
 ---
 
-## 4. Tóm tắt tiến độ so với báo cáo
+## 4. Kịch bản test trọn một chuyến (end-to-end)
 
-| Nhóm | Usecase | Backend | App | Ghi chú |
-|------|---------|---------|-----|---------|
-| Quản lý chuyến | Xem danh sách | ✅ | ✅ | Thiếu lọc, thiếu cache offline |
-| | Xem chi tiết | ✅ | ✅ | Thiếu bản đồ nhúng, thiếu giờ giao dự kiến |
-| | Nhận chuyến | ✅ | ✅ | Thiếu kiểm tra 5.b, thiếu offline |
+Chạy liền một mạch để kiểm tra toàn bộ luồng:
+
+1. Đăng nhập `taixe01` → Lịch trình → chuyến Chờ nhận.
+2. **Nhận chuyến** → **Bắt đầu chuyến** (cấp quyền, bật GPS) → thấy thông báo GPS.
+3. Đặt vị trí emulator trong bán kính → **Đã đến công trình**.
+4. Bấm **Sự cố** → Tắc đường kéo dài → mô tả → Gửi → Xong.
+5. **Xác nhận giao hàng** → 8.5 → chọn ảnh → Xác nhận.
+6. **Hoàn thành chuyến** → kiểm tra hộp thoại tóm tắt → Hoàn thành → thông báo GPS tắt.
+7. Kiểm tra DB: `chuyen.trang_thai = 5`, `don_hang.trang_thai = 4`, `xe/tai_xe.trang_thai = 1`, `vi_tri_gps` có điểm, `su_co` có 1 bản ghi.
+
+| Kết quả end-to-end | Pass/Fail |
+|--------------------|-----------|
+| Toàn bộ 7 bước | |
+
+---
+
+## 5. Tóm tắt tiến độ so với báo cáo
+
+| Nhóm | Usecase | Backend | App | Còn thiếu |
+|------|---------|---------|-----|-----------|
+| Quản lý chuyến | Xem danh sách | ✅ | ✅ | Lọc, cache offline |
+| | Xem chi tiết | ✅ | ✅ | Bản đồ nhúng |
+| | Nhận chuyến | ✅ có 5.b | ✅ | Offline (6.a) |
 | | Bắt đầu chuyến | ✅ | ✅ | |
-| | Hoàn thành chuyến | ⚠️ | ⚠️ | Điều kiện trạng thái sai so với báo cáo |
-| Gửi vị trí GPS | Bật định vị | – | ✅ | |
-| | Tắt định vị | – | ✅ | |
-| | Gửi tọa độ realtime | ✅ WebSocket | ✅ | Chưa đẩy realtime sang web |
-| Cập nhật trạng thái | Đang giao | ✅ | ✅ | Gộp với Bắt đầu chuyến |
-| | Đã đến công trình | ❌ | ❌ | |
-| | Xác nhận giao hàng | ❌ | ❌ | |
-| | Báo cáo sự cố | ❌ | ⚠️ chỉ giao diện | |
+| | Hoàn thành chuyến | ✅ đúng 5.a | ✅ có tóm tắt | Offline (5.b) |
+| Gửi vị trí GPS | Bật / Tắt định vị | – | ✅ | |
+| | Gửi tọa độ realtime | ✅ tới khi chuyến kết thúc | ✅ | Cảnh báo GPS yếu, đẩy realtime sang web |
+| Cập nhật trạng thái | Đang giao | ✅ | ✅ | Dùng chung nút Bắt đầu chuyến |
+| | **Đã đến công trình** | ✅ bán kính 500 m | ✅ | Offline |
+| | **Xác nhận giao hàng** | ✅ | ✅ màn hình mới | Offline |
+| | **Báo cáo sự cố** | ✅ API mới | ✅ nối API | Push thật, offline |
 
-**Nên làm tiếp theo thứ tự:** (1) API và nút **Đã đến công trình** → (2) API và form **Xác nhận giao hàng** → (3) sửa điều kiện **Hoàn thành chuyến** thành chỉ cho phép khi Đã giao hàng → (4) API **Báo cáo sự cố** và nối form trên app → (5) các luồng phụ (offline, lọc, 401).
+Ghi chú về cách đã kiểm tra:
+- **Backend:** biên dịch thành công, 18 unit test pass, và đã chạy thật trên MariaDB với đủ các trường hợp đúng/sai cho cả 4 API mới.
+- **App Android:** code Java đã được kiểm tra lỗi biên dịch, nhưng **chưa được build bằng Gradle và chưa chạy trên thiết bị**, vì môi trường của mình không tải được Android SDK. Hãy chạy mục 0.5 trước tiên.

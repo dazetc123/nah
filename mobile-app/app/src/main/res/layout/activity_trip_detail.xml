@@ -154,8 +154,41 @@
                         <include android:id="@+id/rowKhoiLuong" layout="@layout/item_detail_row"/>
                         <include android:id="@+id/rowTram" layout="@layout/item_detail_row"/>
                         <include android:id="@+id/rowBienSo" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowThoiGianDuKien" layout="@layout/item_detail_row"/>
                         <include android:id="@+id/rowThoiGianGiao" layout="@layout/item_detail_row"/>
                         <include android:id="@+id/rowGhiChu" layout="@layout/item_detail_row"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <!-- Mục 2.2.3 - kết quả "Đã đến công trình" và "Xác nhận giao hàng" -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardTienDo"
+                    style="@style/Driver.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:text="Tiến độ giao hàng"
+                            android:textColor="@color/colorTextSecondary"
+                            android:textSize="12sp"
+                            android:textStyle="bold"/>
+
+                        <include android:id="@+id/rowDaDen" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowGhiChuDen" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowKhoiLuongThucGiao" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowGhiChuGiaoHang" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowDonHangDaGiao" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowHoanThanh" layout="@layout/item_detail_row"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -172,9 +205,23 @@
         android:padding="12dp">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAction"
-            android:layout_width="match_parent"
+            android:id="@+id/btnReport"
+            style="@style/Driver.Button.Outlined"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Sự cố"
+            android:textColor="@color/colorError"
+            android:visibility="gone"
+            app:icon="@drawable/ic_warning"
+            app:iconTint="@color/colorError"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAction"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
             android:text="Nhận chuyến"/>
     </LinearLayout>
 </LinearLayout>

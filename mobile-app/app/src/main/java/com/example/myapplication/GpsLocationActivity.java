@@ -130,18 +130,26 @@ public class GpsLocationActivity extends AppCompatActivity {
         timChuyenDangGiaoRoiBat();
     }
 
-    /** Tìm chuyến đang ở trạng thái "Đang giao" của tài xế (nếu có) để gắn vào dịch vụ GPS. */
+    /**
+     * Tìm chuyến đang thực hiện (Đang giao / Đã đến / Đã giao hàng) của tài xế
+     * (nếu có) để gắn vào dịch vụ GPS.
+     */
     private void timChuyenDangGiaoRoiBat() {
-        ApiClient.getService(this).getDanhSachChuyen(TrangThaiChuyenUtil.DANG_GIAO, 1, 1)
+        ApiClient.getService(this).getDanhSachChuyen(null, 1, 20)
                 .enqueue(new Callback<PageResponse<ChuyenDanhSach>>() {
                     @Override
                     public void onResponse(Call<PageResponse<ChuyenDanhSach>> call,
                                             Response<PageResponse<ChuyenDanhSach>> response) {
                         Long idChuyen = null;
                         if (response.isSuccessful() && response.body() != null
-                                && response.body().getDanhSach() != null
-                                && !response.body().getDanhSach().isEmpty()) {
-                            idChuyen = response.body().getDanhSach().get(0).getIdChuyen();
+                                && response.body().getDanhSach() != null) {
+                            for (ChuyenDanhSach c : response.body().getDanhSach()) {
+                                if (c.getTrangThai() >= TrangThaiChuyenUtil.DANG_GIAO
+                                        && c.getTrangThai() <= TrangThaiChuyenUtil.DA_GIAO_HANG) {
+                                    idChuyen = c.getIdChuyen();
+                                    break;
+                                }
+                            }
                         }
                         hoanTatBat(idChuyen);
                     }
@@ -168,7 +176,7 @@ public class GpsLocationActivity extends AppCompatActivity {
             datSwitch(true);
             new MaterialAlertDialogBuilder(this)
                     .setTitle("Không thể tắt định vị")
-                    .setMessage("Chuyến #" + idChuyen + " đang được giao, không thể tắt định vị cho tới khi hoàn thành chuyến.")
+                    .setMessage("Chuyến #" + idChuyen + " đang thực hiện, không thể tắt định vị cho tới khi hoàn thành chuyến.")
                     .setPositiveButton("Đã hiểu", null)
                     .show();
             return;
