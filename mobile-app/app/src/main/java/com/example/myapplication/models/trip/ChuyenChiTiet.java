@@ -16,6 +16,8 @@ public class ChuyenChiTiet {
 
     private String tenTram;
     private String diaChiTram;
+    private Double viDoTram;
+    private Double kinhDoTram;
 
     private String thoiGianGiao;        // giờ giao dự kiến
     private String thoiGianNhan;
@@ -52,6 +54,8 @@ public class ChuyenChiTiet {
     public Double getKhoiLuong() { return khoiLuong; }
     public String getTenTram() { return tenTram; }
     public String getDiaChiTram() { return diaChiTram; }
+    public Double getViDoTram() { return viDoTram; }
+    public Double getKinhDoTram() { return kinhDoTram; }
     public String getThoiGianGiao() { return thoiGianGiao; }
     public String getThoiGianNhan() { return thoiGianNhan; }
     public String getThoiGianXuatPhat() { return thoiGianXuatPhat; }

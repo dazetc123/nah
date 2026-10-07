@@ -40,6 +40,13 @@ public class TramTron {
     @Column(name = "trangThai")
     private Integer trangThai;
 
+    // Tọa độ trạm trộn - dùng vẽ tuyến đường gợi ý trên bản đồ app tài xế (mục 2.2.1)
+    @Column(name = "viDo")
+    private Double viDo;
+
+    @Column(name = "kinhDo")
+    private Double kinhDo;
+
     @OneToMany(mappedBy = "tramTron")
     private List<Chuyen> danhSachChuyen;
 }

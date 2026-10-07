@@ -22,6 +22,7 @@ import com.example.myapplication.utils.ApiError;
 import com.example.myapplication.utils.LocationUtil;
 import com.example.myapplication.utils.SessionManager;
 import com.example.myapplication.utils.TrangThaiChuyenUtil;
+import com.example.myapplication.utils.TripMapController;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -51,6 +52,8 @@ public class TripDetailActivity extends AppCompatActivity {
     private View actionBar, cardTienDo;
     private View rowMac, rowKhoiLuong, rowTram, rowBienSo, rowThoiGianDuKien, rowThoiGianGiao, rowGhiChu;
     private View rowDaDen, rowGhiChuDen, rowKhoiLuongThucGiao, rowGhiChuGiaoHang, rowDonHangDaGiao, rowHoanThanh;
+
+    private TripMapController mapController;
 
     private long idChuyen;
     private ChuyenChiTiet chuyen;
@@ -83,6 +86,7 @@ public class TripDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TripMapController.init(this);
         setContentView(R.layout.activity_trip_detail);
         idChuyen = getIntent().getLongExtra(EXTRA_ID_CHUYEN, -1);
         if (idChuyen <= 0) { finish(); return; }
@@ -115,6 +119,8 @@ public class TripDetailActivity extends AppCompatActivity {
         rowDonHangDaGiao = findViewById(R.id.rowDonHangDaGiao);
         rowHoanThanh = findViewById(R.id.rowHoanThanh);
 
+        mapController = new TripMapController(findViewById(R.id.mapView), findViewById(R.id.tvMapInfo));
+
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         swipeRefresh.setOnRefreshListener(this::load);
         btnAction.setOnClickListener(v -> confirmAction());
@@ -130,7 +136,20 @@ public class TripDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (mapController != null) mapController.onResume();
         load();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mapController != null) mapController.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mapController != null) mapController.onDestroy();
+        super.onDestroy();
     }
 
     private void load() {
@@ -173,6 +192,7 @@ public class TripDetailActivity extends AppCompatActivity {
                 ? "Không có" : c.getGhiChu());
 
         bindTienDo(c);
+        mapController.show(c, LocationUtil.viTriGanNhat(this));
 
         btnCall.setEnabled(c.getSdtCongTrinh() != null && !c.getSdtCongTrinh().isEmpty());
         btnMap.setEnabled(c.getViDoCongTrinh() != null && c.getKinhDoCongTrinh() != null);

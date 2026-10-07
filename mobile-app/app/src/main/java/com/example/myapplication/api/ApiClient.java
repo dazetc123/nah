@@ -18,7 +18,7 @@ public class ApiClient {
             SessionManager sessionManager = new SessionManager(context.getApplicationContext());
 
             OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .connectTimeout(8, TimeUnit.SECONDS) // báo lỗi mất kết nối nhanh hơn
                     .readTimeout(20, TimeUnit.SECONDS)
                     .addInterceptor(chain -> {
                         Request.Builder builder = chain.request().newBuilder();

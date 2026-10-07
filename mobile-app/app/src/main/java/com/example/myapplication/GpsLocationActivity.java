@@ -135,7 +135,7 @@ public class GpsLocationActivity extends AppCompatActivity {
      * (nếu có) để gắn vào dịch vụ GPS.
      */
     private void timChuyenDangGiaoRoiBat() {
-        ApiClient.getService(this).getDanhSachChuyen(null, 1, 20)
+        ApiClient.getService(this).getDanhSachChuyen(null, null, 1, 20)
                 .enqueue(new Callback<PageResponse<ChuyenDanhSach>>() {
                     @Override
                     public void onResponse(Call<PageResponse<ChuyenDanhSach>> call,

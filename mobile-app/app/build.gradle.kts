@@ -37,6 +37,8 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    // Bản đồ OpenStreetMap nhúng trong màn chi tiết chuyến (không cần API key)
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)

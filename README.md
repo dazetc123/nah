@@ -17,10 +17,11 @@ he-thong-betong/
   ./mvnw spring-boot:run
   ```
 - Mặc định chạy ở cổng `8080`.
-- **Biến môi trường** (không ghi mật khẩu thẳng vào `application.properties`):
-  `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET` (≥ 32 ký tự), `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
-  (có thể đặt `dummy` nếu không dùng đăng nhập Google), `MAIL_USERNAME`, `MAIL_PASSWORD`.
-- Dữ liệu mẫu cho app Tài xế: `du_lieu_mau_quan_ly_chuyen.sql`.
+- **Biến môi trường** (không ghi mật khẩu thẳng vào `application.properties`): chỉ cần đặt
+  `DB_USERNAME` (mặc định `hung`) và `DB_PASSWORD` (mặc định trống) nếu MySQL của bạn khác.
+  `JWT_SECRET`, `GOOGLE_CLIENT_ID/SECRET`, `MAIL_USERNAME/PASSWORD` đều có giá trị mặc định để chạy thử.
+- Dữ liệu mẫu cho app Tài xế: `du_lieu_mau_quan_ly_chuyen.sql`, sau đó `du_lieu_test_nhieu_chuyen.sql`
+  (thêm tài khoản `quanly01`, `dieuphoi01`, `taixe02` - mật khẩu `123456789` - và nhiều chuyến để test).
 - Checklist test app Tài xế: [`docs/checklist-test-tai-xe.md`](docs/checklist-test-tai-xe.md).
 
 ## 2. Frontend Web (`frontend-web/`)

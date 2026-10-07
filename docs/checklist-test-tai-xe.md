@@ -26,23 +26,45 @@ Chờ nhận(0) → Đã nhận(1) → Đang giao(2) → Đã đến công trìn
 | # | Bước | Kết quả mong đợi | Pass/Fail |
 |---|------|------------------|-----------|
 | 0.1 | Chạy MySQL, tạo database `quanly_betong` | Kết nối được | |
-| 0.2 | Đặt biến môi trường cho backend (xem mục "Biến môi trường" bên dưới), rồi chạy `cd backend && ./mvnw spring-boot:run` | Log in ra `Started BetongApplication`. Bảng `chuyen` có thêm các cột mới (`thoi_gian_den`, `khoi_luong_thuc_giao`, `anh_minh_chung`, …) | |
+| 0.2 | Đặt tài khoản MySQL (xem "Biến môi trường" bên dưới), rồi chạy `cd backend && mvnw spring-boot:run` | Log in ra `Started BetongApplication`. Bảng `chuyen` có thêm các cột mới (`thoi_gian_den`, `khoi_luong_thuc_giao`, `anh_minh_chung`, …) | |
 | 0.3 | Bảng `vai_tro` có đủ 4 vai trò; có tài khoản `taixe01` (vai trò Tài xế) và bản ghi `tai_xe` tương ứng | Đăng nhập được | |
 | 0.4 | Chạy `du_lieu_mau_quan_ly_chuyen.sql` (**bản mới**, đã có cột `version`) | Câu `SELECT` cuối trả về 1 chuyến có `trang_thai = 0` | |
+| 0.4b | Chạy `du_lieu_test_nhieu_chuyen.sql` trong DBeaver (xem mục "Dữ liệu test nhiều chuyến") | Bảng kết quả cuối có thêm chuyến của `taixe01` và `taixe02` | |
 | 0.5 | Android Studio: mở `mobile-app`, chờ Gradle sync xong (cần SDK 37) | **Build thành công** | |
 | 0.6 | Chạy trên **emulator** (`10.0.2.2:8080`). Nếu dùng máy thật thì sửa `ApiClient.BASE_URL` thành IP LAN của máy tính | Mở màn hình Đăng nhập | |
 | 0.7 | Android 13 trở lên: mở trang chủ lần đầu | Hiện hộp thoại xin quyền **Thông báo**. Bấm Cho phép | |
 
-**Biến môi trường backend.** Mật khẩu và khóa không còn ghi thẳng trong `application.properties`:
+**Biến môi trường backend.** Chỉ cần đặt nếu tài khoản MySQL của bạn khác `hung` / mật khẩu trống (giống cấu hình gốc của nhóm). Các biến còn lại đều có giá trị mặc định để chạy thử:
 
-| Biến | Ví dụ | Ghi chú |
-|------|-------|---------|
-| `DB_USERNAME` | `hung` | Mặc định `root` |
-| `DB_PASSWORD` | *(mật khẩu MySQL của bạn)* | Mặc định để trống |
-| `JWT_SECRET` | chuỗi ≥ 32 ký tự | Có giá trị mặc định để chạy thử trên máy cá nhân |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | `dummy` | Bắt buộc phải có giá trị thì backend mới khởi động, kể cả khi không dùng đăng nhập Google |
+| Biến | Mặc định | Khi nào cần đặt |
+|------|----------|-----------------|
+| `DB_USERNAME` | `hung` | MySQL của bạn dùng user khác (ví dụ `root`) |
+| `DB_PASSWORD` | *(trống)* | User MySQL có mật khẩu |
+| `JWT_SECRET` | chuỗi dùng thử | Khi chạy thật |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | `chua-cau-hinh` | Khi dùng đăng nhập Google |
+| `MAIL_USERNAME`, `MAIL_PASSWORD` | *(trống)* | Khi dùng gửi mail OTP / quên mật khẩu |
+
+Ví dụ trong cmd (gõ trong cùng cửa sổ trước khi chạy `mvnw`):
+
+```cmd
+set DB_USERNAME=root
+set DB_PASSWORD=matkhaucuaban
+mvnw spring-boot:run
+```
 
 Trong IntelliJ: **Run → Edit Configurations → Environment variables**.
+
+**Dữ liệu test nhiều chuyến** (`du_lieu_test_nhieu_chuyen.sql`). Mở file trong DBeaver và bấm **Execute SQL Script** (Alt+X). Chạy lại nhiều lần được, mỗi lần tạo thêm một bộ chuyến. File tạo ra:
+
+| Dữ liệu | Dùng cho mục |
+|---------|--------------|
+| Tài khoản `quanly01` (Quản lý), `dieuphoi01` (Điều phối), `taixe02` (Tài xế); mật khẩu đều là `123456789` | Đăng nhập web, 1.2.5 |
+| Đơn A giao **ngày mai**, 2 chuyến Chờ nhận của `taixe01` | 1.1.7 lọc ngày, 1.3.5, 1.5.7 |
+| Đơn B giao **3 ngày trước**, 1 chuyến Hoàn thành | 1.1.7 lọc trạng thái/ngày |
+| Đơn C, 1 chuyến của `taixe02` | 1.2.5 |
+| Tọa độ cho trạm trộn mẫu (cách công trình khoảng 4 km) | 1.2.4 bản đồ và tuyến đường |
+
+> **Về tài khoản admin:** web quản trị (`frontend-web`) hiện chưa có màn hình tạo chuyến, nên cách nhanh nhất để có thêm chuyến là chạy file SQL trên. Nếu muốn tạo chuyến bằng API: đăng nhập `dieuphoi01` ở Swagger (`POST /api/auth/dang-nhap`, header `ClientKey`), bấm **Authorize** rồi gọi `POST /api/dieu-phoi/xe/chuyen`.
 
 **SQL tiện dùng khi test:**
 
@@ -84,10 +106,16 @@ SELECT iddh, trang_thai FROM don_hang;  -- 4 = Hoàn thành
 | 1.1.2 | Kiểm tra từng dòng | Có mã chuyến, tên công trình, khối lượng, giờ giao dự kiến, biển số, nhãn trạng thái có màu | 🟢 | |
 | 1.1.3 | Vuốt xuống để tải lại | Danh sách được làm mới | 🔵 | |
 | 1.1.4 | Tài xế không có chuyến nào | Hiện thông báo "chưa có chuyến" | 🔵 | |
-| 1.1.5 | Tắt backend rồi tải lại (luồng 3.a) | Snackbar "Không kết nối được máy chủ…" | 🔵 | |
-| 1.1.6 | Luồng 3.a: hiển thị dữ liệu lưu tạm khi mất mạng | | ⚪ | |
-| 1.1.7 | Bước 5: lọc theo trạng thái / ngày | | ⚪ Backend có tham số `trangThai`, app chưa có giao diện lọc | |
+| 1.1.5 | **Đăng xuất, đăng nhập lại** (để xóa dữ liệu đã lưu), tắt backend rồi mở Lịch trình (luồng 3.a, chưa từng đồng bộ) | Sau tối đa khoảng 8 giây hiện màn hình **"Không kết nối được máy chủ"** (biểu tượng đỏ) và nút **Thử lại**. Không còn hiện nhầm "Chưa có chuyến" | 🔵 | |
+| 1.1.6 | Bật backend, mở Lịch trình (tab Tất cả) để đồng bộ. Tắt backend, vuốt tải lại (luồng 3.a) | Vẫn thấy danh sách cũ, phía trên có thanh vàng **"Không có kết nối mạng. Đang hiển thị dữ liệu đã lưu lúc HH:mm dd/MM"** | 🔵 | |
+| 1.1.6b | Vẫn tắt backend, bấm chip "Chờ nhận" | Lọc ngay trên dữ liệu đã lưu, thanh vàng vẫn hiện | 🔵 | |
+| 1.1.6c | Bật lại backend, vuốt tải lại | Thanh vàng biến mất, dữ liệu mới nhất | 🔵 | |
+| 1.1.7 | Bước 5: bấm từng chip trạng thái (Chờ nhận, Đã nhận, …, Hoàn thành) | Chỉ hiện chuyến đúng trạng thái | 🟢 API | |
+| 1.1.7b | Bấm chip **"Ngày giao: tất cả"** → chọn ngày mai | Chỉ hiện chuyến của Đơn A; chip đổi thành "Ngày giao: dd/MM/yyyy" có dấu ✕ | 🟢 API | |
+| 1.1.7c | Chọn trạng thái "Hoàn thành" + ngày mai | Hiện "Không có chuyến phù hợp" (khác với "Chưa có chuyến nào được phân công") | 🟢 API | |
+| 1.1.7d | Bấm ✕ trên chip ngày | Bỏ lọc ngày | 🔵 | |
 | 1.1.8 | Đăng nhập tài xế khác | Không thấy chuyến của `taixe01` | 🟢 | |
+| 1.1.8b | Luồng 4.b phiên hết hạn: đang đăng nhập app, **tắt backend**, trong cmd đặt `set JWT_SECRET=chuoi-bi-mat-moi-de-test-het-han-123456` rồi chạy lại `mvnw spring-boot:run` (token cũ trên app thành không hợp lệ). Vào Lịch trình hoặc vuốt tải lại | Quay về màn hình **Đăng nhập** kèm thông báo phiên đã hết hạn. Đăng nhập lại là dùng được | 🟢 API trả 401 | |
 
 ### 1.2 Xem thông tin chi tiết chuyến
 
@@ -96,9 +124,29 @@ SELECT iddh, trang_thai FROM don_hang;  -- 4 = Hoàn thành
 | 1.2.1 | Bấm vào 1 chuyến | Có mã chuyến, trạng thái, tên và địa chỉ công trình, mác bê tông, khối lượng, **trạm trộn kèm địa chỉ**, biển số, **giờ giao dự kiến**, thời gian xuất phát, ghi chú điều phối | 🟢 | |
 | 1.2.2 | Bấm **Gọi** | Mở trình gọi điện với SĐT công trình | 🔵 | |
 | 1.2.3 | Bấm **Chỉ đường** (luồng 4.a) | Mở ứng dụng bản đồ ngoài tại tọa độ công trình | 🔵 | |
-| 1.2.4 | Bước 4: bản đồ nhúng trong app kèm tuyến đường | | ⚪ | |
-| 1.2.5 | Luồng 2.b: đang mở chi tiết thì đổi `idtx` của chuyến trong DB sang tài xế khác, rồi vuốt tải lại | Hộp thoại **"Chuyến không còn hiệu lực"**, nút "Về danh sách" | 🟢 API trả 404 kèm thông báo | |
+| 1.2.4 | Bước 4: mở chuyến của Đơn A | Thẻ **bản đồ** (OpenStreetMap) có ghim công trình, biểu tượng trạm trộn, biểu tượng xe (nếu có vị trí), **đường màu tím** là tuyến gợi ý. Dòng dưới: "Tuyến gợi ý từ trạm trộn: x km, khoảng y phút" | 🔵 Cần internet trên máy ảo | |
+| 1.2.4b | Kéo/zoom bản đồ bằng 2 ngón (trên máy ảo: giữ Ctrl + kéo chuột để zoom) | Bản đồ di chuyển, màn hình không bị cuộn theo | 🔵 | |
+| 1.2.4c | Luồng 4.a: tắt mạng máy ảo (kéo thanh thông báo → tắt Wi-Fi/Data) rồi mở một chuyến **khác** | Dòng dưới bản đồ: "Không lấy được tuyến đường, đang hiển thị đường thẳng tham khảo…", vẫn dùng được nút **Chỉ đường** | 🔵 | |
+| 1.2.4d | Chuyến mẫu ban đầu khi trạm chưa có tọa độ (`UPDATE tram_tron SET vi_do=NULL`) | "Trạm trộn chưa có tọa độ nên chưa vẽ được tuyến đường…" | 🔵 | |
+| 1.2.5 | Luồng 2.b: xem hướng dẫn **"Cách test 1.2.5"** bên dưới | Hộp thoại **"Chuyến không còn hiệu lực"**, nút "Về danh sách" | 🟢 API trả 404 kèm thông báo | |
 | 1.2.6 | Tắt backend, vuốt tải lại (luồng 2.a) | Báo lỗi, vuốt lại để thử | 🔵 | |
+
+**Cách test 1.2.5** (chuyến bị chuyển cho tài xế khác khi đang xem):
+
+1. Trên app (`taixe01`), mở chi tiết một chuyến Chờ nhận, ví dụ chuyến của Đơn A. Ghi lại **mã chuyến** ở đầu màn hình, ví dụ `Chuyến #4`.
+2. Giữ nguyên màn hình đó. Trong DBeaver chạy (thay `4` bằng mã chuyến của bạn):
+   ```sql
+   UPDATE chuyen
+   SET idtx = (SELECT idtx FROM tai_xe WHERE idtk = (SELECT idtk FROM tai_khoan WHERE ten_dang_nhap = 'taixe02'))
+   WHERE id_chuyen = 4;
+   ```
+3. Quay lại app, **vuốt xuống** để tải lại → phải hiện hộp thoại "Chuyến không còn hiệu lực". Bấm "Về danh sách" → chuyến #4 không còn trong danh sách.
+4. Trả chuyến lại cho `taixe01` để test tiếp:
+   ```sql
+   UPDATE chuyen
+   SET idtx = (SELECT idtx FROM tai_xe WHERE idtk = (SELECT idtk FROM tai_khoan WHERE ten_dang_nhap = 'taixe01'))
+   WHERE id_chuyen = 4;
+   ```
 
 ### 1.3 Nhận chuyến (Chờ nhận → Đã nhận)
 
@@ -238,8 +286,8 @@ Chạy liền một mạch để kiểm tra toàn bộ luồng:
 
 | Nhóm | Usecase | Backend | App | Còn thiếu |
 |------|---------|---------|-----|-----------|
-| Quản lý chuyến | Xem danh sách | ✅ | ✅ | Lọc, cache offline |
-| | Xem chi tiết | ✅ | ✅ | Bản đồ nhúng |
+| Quản lý chuyến | Xem danh sách | ✅ lọc trạng thái + ngày | ✅ bộ lọc, dữ liệu lưu khi mất mạng, màn lỗi riêng | |
+| | Xem chi tiết | ✅ | ✅ bản đồ + tuyến gợi ý | |
 | | Nhận chuyến | ✅ có 5.b | ✅ | Offline (6.a) |
 | | Bắt đầu chuyến | ✅ | ✅ | |
 | | Hoàn thành chuyến | ✅ đúng 5.a | ✅ có tóm tắt | Offline (5.b) |

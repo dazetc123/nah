@@ -29,6 +29,8 @@ public class ChuyenChiTietResponse {
 
     private String tenTram;
     private String diaChiTram;
+    private Double viDoTram;
+    private Double kinhDoTram;
 
     private LocalDateTime thoiGianGiao;        // thời gian giao dự kiến của đơn hàng
     private LocalDateTime thoiGianNhan;

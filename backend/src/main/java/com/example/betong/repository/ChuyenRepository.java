@@ -64,14 +64,21 @@ public interface ChuyenRepository extends JpaRepository<Chuyen, Long> {
 
     // ===================== Dành cho app Tài xế (mục 2.2.1) =====================
 
-    /** Bảng usecase "Xem danh sách chuyến được phân công" — lọc theo trạng thái (tuỳ chọn). */
+    /**
+     * Bảng usecase "Xem danh sách chuyến được phân công" — bước 5: lọc theo trạng thái
+     * và/hoặc theo ngày giao dự kiến [tuNgay, denNgay) (đều tuỳ chọn).
+     */
     @Query("""
             SELECT c FROM Chuyen c
             WHERE c.taiXe.idTX = :idTX
               AND (:trangThai IS NULL OR c.trangThai = :trangThai)
+              AND (:tuNgay IS NULL OR c.donHang.thoiGianGiao >= :tuNgay)
+              AND (:denNgay IS NULL OR c.donHang.thoiGianGiao < :denNgay)
             ORDER BY c.idChuyen DESC
             """)
-    Page<Chuyen> timCuaTaiXe(@Param("idTX") Long idTX, @Param("trangThai") Integer trangThai, Pageable pageable);
+    Page<Chuyen> timCuaTaiXe(@Param("idTX") Long idTX, @Param("trangThai") Integer trangThai,
+                             @Param("tuNgay") LocalDateTime tuNgay, @Param("denNgay") LocalDateTime denNgay,
+                             Pageable pageable);
 
     /** Lấy 1 chuyến NHƯNG chỉ khi đúng là của tài xế này — chặn xem/sửa chuyến người khác. */
     @Query("""

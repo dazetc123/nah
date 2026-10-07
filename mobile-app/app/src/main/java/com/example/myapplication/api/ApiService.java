@@ -37,6 +37,7 @@ public interface ApiService {
     @GET("api/tai-xe/chuyen")
     Call<PageResponse<ChuyenDanhSach>> getDanhSachChuyen(
             @Query("trangThai") Integer trangThai,
+            @Query("ngay") String ngay,
             @Query("trang") int trang,
             @Query("soLuong") int soLuong);
 

@@ -6,10 +6,13 @@ import com.example.betong.DTO.response.taixechuyen.ChuyenChiTietResponse;
 import com.example.betong.DTO.response.taixechuyen.ChuyenDanhSachResponse;
 import com.example.betong.Service.taixechuyen.ChuyenTaiXeService;
 import jakarta.validation.constraints.Min;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 
 /**
  * Mục 2.2.1 báo cáo - Quản lý chuyến (tác nhân Tài xế): Xem danh sách
@@ -27,14 +30,18 @@ public class ChuyenTaiXeController {
         this.service = service;
     }
 
-    /** Usecase "Xem danh sách chuyến được phân công" - trangThai bỏ trống = xem tất cả. */
+    /**
+     * Usecase "Xem danh sách chuyến được phân công" - trangThai bỏ trống = xem tất cả;
+     * ngay (yyyy-MM-dd) bỏ trống = mọi ngày, có giá trị = lọc theo ngày giao dự kiến.
+     */
     @GetMapping
     public PageResponse<ChuyenDanhSachResponse> danhSach(
             @RequestParam(required = false) Integer trangThai,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay,
             @RequestParam(defaultValue = "1") @Min(1) int trang,
             @RequestParam(defaultValue = "20") @Min(1) int soLuong,
             Authentication authentication) {
-        return service.danhSachChuyen(authentication.getName(), trangThai, trang, soLuong);
+        return service.danhSachChuyen(authentication.getName(), trangThai, ngay, trang, soLuong);
     }
 
     /** Usecase "Xem thông tin chi tiết chuyến". */

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -62,11 +63,13 @@ public class ChuyenTaiXeServiceImpl implements ChuyenTaiXeService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ChuyenDanhSachResponse> danhSachChuyen(String tenDangNhap, Integer trangThai,
+    public PageResponse<ChuyenDanhSachResponse> danhSachChuyen(String tenDangNhap, Integer trangThai, LocalDate ngay,
                                                                 int trang, int soLuong) {
         TaiXe taiXe = taiXeHienTai(tenDangNhap);
+        LocalDateTime tuNgay = ngay == null ? null : ngay.atStartOfDay();
+        LocalDateTime denNgay = ngay == null ? null : ngay.plusDays(1).atStartOfDay();
         return PageResponse.tu(
-                chuyenRepository.timCuaTaiXe(taiXe.getIdTX(), trangThai,
+                chuyenRepository.timCuaTaiXe(taiXe.getIdTX(), trangThai, tuNgay, denNgay,
                         PageRequest.of(Math.max(0, trang - 1), Math.max(1, soLuong))),
                 this::sangDanhSachResponse);
     }
@@ -305,6 +308,8 @@ public class ChuyenTaiXeServiceImpl implements ChuyenTaiXeService {
                 .khoiLuong(c.getKhoiLuong())
                 .tenTram(tram == null ? null : tram.getTenTram())
                 .diaChiTram(tram == null ? null : tram.getDiaChi())
+                .viDoTram(tram == null ? null : tram.getViDo())
+                .kinhDoTram(tram == null ? null : tram.getKinhDo())
                 .thoiGianGiao(d.getThoiGianGiao())
                 .thoiGianNhan(c.getThoiGianNhan())
                 .thoiGianXuatPhat(c.getThoiGianXuatPhat())
