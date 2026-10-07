@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorBackground">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Driver.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Báo cáo sự cố xe"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Step 1: vehicle -->
+            <TextView style="@style/Driver.SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1. THÔNG TIN XE"/>
+            <com.google.android.material.card.MaterialCardView style="@style/Driver.Card" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilLicensePlate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Biển số xe (VD: 29C-123.45)"
+                        app:startIconDrawable="@drawable/ic_truck">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLicensePlate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapCharacters"
+                            android:maxLines="1"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:hint="Số điện thoại liên hệ"
+                        app:startIconDrawable="@drawable/ic_phone">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="phone"
+                            android:maxLines="1"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Step 2: status -->
+            <TextView style="@style/Driver.SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="2. LOẠI SỰ CỐ"/>
+            <com.google.android.material.card.MaterialCardView style="@style/Driver.Card" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    app:chipSpacingHorizontal="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipMaintenance"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Bảo trì"/>
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBroken"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hỏng hóc"/>
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAccident"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tai nạn"/>
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipOther"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Khác"/>
+                </com.google.android.material.chip.ChipGroup>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Step 3: location -->
+            <TextView style="@style/Driver.SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="3. VỊ TRÍ GẶP SỰ CỐ"/>
+            <com.google.android.material.card.MaterialCardView style="@style/Driver.Card" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Nhập địa chỉ hoặc dùng GPS"
+                        app:startIconDrawable="@drawable/ic_location">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLocation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPostalAddress"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGps"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="10dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="Lấy vị trí hiện tại"
+                        app:cornerRadius="14dp"
+                        app:icon="@drawable/ic_location"
+                        app:iconGravity="textStart"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Step 4: description + photo -->
+            <TextView style="@style/Driver.SectionTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="4. MÔ TẢ &amp; HÌNH ẢNH"/>
+            <com.google.android.material.card.MaterialCardView style="@style/Driver.Card" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Mô tả tình trạng / nguyên nhân"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="500">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="top|start"
+                            android:inputType="textMultiLine|textCapSentences"
+                            android:maxLength="500"
+                            android:minLines="4"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageView
+                        android:id="@+id/ivPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_icon_indigo"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        android:contentDescription="Ảnh sự cố"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnUploadImage"
+                        style="@style/Driver.Button.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Chọn hoặc chụp ảnh"
+                        app:icon="@drawable/ic_camera"
+                        app:iconGravity="textStart"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Sticky bottom action bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorSurface"
+        android:elevation="12dp"
+        android:orientation="horizontal"
+        android:padding="12dp">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            style="@style/Driver.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Hủy"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSubmitFault"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:backgroundTint="@color/colorError"
+            android:text="Gửi báo cáo"
+            app:icon="@drawable/ic_send"
+            app:iconGravity="textStart"/>
+    </LinearLayout>
+</LinearLayout>

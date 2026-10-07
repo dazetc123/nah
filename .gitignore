@@ -1,0 +1,49 @@
+# ==========================================
+# Git Ignore cho Hệ Thống Điều Hành Bê Tông
+# ==========================================
+
+# macOS / Windows OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Logs
+*.log
+logs/
+
+# ==========================================
+# 1. Backend (Spring Boot / Maven)
+# ==========================================
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/**/*.class
+backend/uploads/
+
+# ==========================================
+# 2. Frontend Web (React / Vite / Node)
+# ==========================================
+frontend-web/node_modules/
+frontend-web/dist/
+frontend-web/.env.local
+frontend-web/.env.*.local
+frontend-web/*.tsbuildinfo
+
+# ==========================================
+# 3. Mobile App (Android Studio / Gradle)
+# ==========================================
+mobile-app/.gradle/
+mobile-app/build/
+mobile-app/*/build/
+mobile-app/*.apk
+mobile-app/*.aab
+mobile-app/local.properties
+mobile-app/captures/
+mobile-app/.externalNativeBuild/
+mobile-app/.cxx/

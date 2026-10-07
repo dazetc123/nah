@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_header"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvGreeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Xin chào,"
+                        android:textColor="@color/colorTextOnDarkMuted"
+                        android:textSize="15sp"/>
+                    <TextView
+                        android:id="@+id/tvDriverName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tài xế"
+                        android:textColor="@color/white"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:maxLines="1"
+                        android:ellipsize="end"/>
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/btnAvatar"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_icon_white"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Hồ sơ của tôi">
+                    <TextView
+                        android:id="@+id/tvAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="TX"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+                </FrameLayout>
+            </LinearLayout>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:clickable="false"
+                android:text="Đang làm việc"
+                android:textColor="@color/colorSuccess"
+                app:chipBackgroundColor="@color/colorSuccessLight"
+                app:chipIcon="@drawable/ic_check_circle"
+                app:chipIconTint="@color/colorSuccess"
+                app:chipStrokeWidth="0dp"/>
+        </LinearLayout>
+
+        <!-- Primary action: report incident -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnReportFault"
+            style="@style/Driver.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="-40dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardElevation="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_icon_red">
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_warning"
+                            app:tint="@color/colorError"
+                            android:contentDescription="@null"/>
+                    </FrameLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Báo cáo sự cố xe"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="18sp"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Xe hỏng, tai nạn, cần hỗ trợ gấp"
+                            android:textColor="@color/colorTextSecondary"
+                            android:textSize="14sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnReportFaultAction"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="@color/colorError"
+                    android:text="Báo cáo ngay"
+                    app:icon="@drawable/ic_send"
+                    app:iconGravity="textStart"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            style="@style/Driver.SectionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:text="CHỨC NĂNG"/>
+
+        <!-- Vehicle status -->
+        <include
+            android:id="@+id/rowVehicle"
+            layout="@layout/item_menu_row"/>
+        <!-- Trips -->
+        <include
+            android:id="@+id/rowTrips"
+            layout="@layout/item_menu_row"/>
+        <!-- Gửi vị trí GPS -->
+        <include
+            android:id="@+id/rowGps"
+            layout="@layout/item_menu_row"/>
+        <!-- Profile -->
+        <include
+            android:id="@+id/rowProfile"
+            layout="@layout/item_menu_row"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            style="@style/Driver.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="20dp"
+            android:text="Đăng xuất"
+            android:textColor="@color/colorError"
+            app:icon="@drawable/ic_logout"
+            app:iconGravity="textStart"
+            app:iconTint="@color/colorError"
+            app:strokeColor="@color/colorErrorLight"/>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
