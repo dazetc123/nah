@@ -39,6 +39,10 @@ import org.osmdroid.views.overlay.Polyline;
  */
 public class TripMapController {
 
+    private static final String TAG = "TripMap";
+    /** OpenStreetMap yêu cầu user-agent nhận diện được ứng dụng, nếu không có thể bị chặn tải ô bản đồ. */
+    private static String userAgent = "BetongOps-TaiXe/1.0";
+
     private static final String OSRM_URL =
             "https://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=full&geometries=geojson";
 
@@ -54,7 +58,9 @@ public class TripMapController {
     public static void init(Context context) {
         Configuration.getInstance().load(context,
                 context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE));
-        Configuration.getInstance().setUserAgentValue(context.getPackageName());
+        userAgent = "BetongOps-TaiXe/1.0 (Android " + android.os.Build.VERSION.RELEASE + "; "
+                + context.getPackageName() + ")";
+        Configuration.getInstance().setUserAgentValue(userAgent);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -189,8 +195,12 @@ public class TripMapController {
     private TuyenDuong layTuyenDuong(GeoPoint tu, GeoPoint den) {
         String url = String.format(Locale.US, OSRM_URL,
                 tu.getLongitude(), tu.getLatitude(), den.getLongitude(), den.getLatitude());
-        try (Response r = http.newCall(new Request.Builder().url(url).build()).execute()) {
-            if (!r.isSuccessful() || r.body() == null) return null;
+        Request req = new Request.Builder().url(url).header("User-Agent", userAgent).build();
+        try (Response r = http.newCall(req).execute()) {
+            if (!r.isSuccessful() || r.body() == null) {
+                android.util.Log.w(TAG, "OSRM trả mã " + r.code());
+                return null;
+            }
             JSONObject route = new JSONObject(r.body().string()).getJSONArray("routes").getJSONObject(0);
             JSONArray coords = route.getJSONObject("geometry").getJSONArray("coordinates");
             TuyenDuong t = new TuyenDuong();
@@ -203,6 +213,8 @@ public class TripMapController {
             t.giay = route.getDouble("duration");
             return t.diem.size() >= 2 ? t : null;
         } catch (Exception e) {
+            // Xem nguyên nhân trong Logcat (lọc "TripMap"), ví dụ SSLHandshakeException / UnknownHostException
+            android.util.Log.w(TAG, "Không lấy được tuyến đường", e);
             return null;
         }
     }
