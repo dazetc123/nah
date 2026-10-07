@@ -24,10 +24,11 @@ import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.CopyrightOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 
@@ -43,8 +44,23 @@ public class TripMapController {
     /** OpenStreetMap yêu cầu user-agent nhận diện được ứng dụng, nếu không có thể bị chặn tải ô bản đồ. */
     private static String userAgent = "BetongOps-TaiXe/1.0";
 
-    private static final String OSRM_URL =
-            "https://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=full&geometries=geojson";
+    /**
+     * Nền bản đồ: dữ liệu OpenStreetMap nhưng tải qua CDN của CARTO (không cần API key).
+     * Một số mạng chặn tên miền openstreetmap.org nên không dùng máy chủ ô bản đồ mặc định.
+     */
+    private static final XYTileSource NEN_BAN_DO = new XYTileSource("CartoVoyager", 0, 19, 256, ".png",
+            new String[]{
+                    "https://a.basemaps.cartocdn.com/rastertiles/voyager/",
+                    "https://b.basemaps.cartocdn.com/rastertiles/voyager/",
+                    "https://c.basemaps.cartocdn.com/rastertiles/voyager/",
+                    "https://d.basemaps.cartocdn.com/rastertiles/voyager/"},
+            "© OpenStreetMap contributors © CARTO");
+
+    /** Dịch vụ tìm đường OSRM công khai, thử lần lượt nếu dịch vụ trước lỗi hoặc bị chặn. */
+    private static final String[] OSRM_URLS = {
+            "https://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=full&geometries=geojson",
+            "https://routing.openstreetmap.de/routed-car/route/v1/driving/%f,%f;%f,%f?overview=full&geometries=geojson"
+    };
 
     private final MapView map;
     private final TextView tvInfo;
@@ -67,7 +83,7 @@ public class TripMapController {
     public TripMapController(MapView map, TextView tvInfo) {
         this.map = map;
         this.tvInfo = tvInfo;
-        map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setTileSource(NEN_BAN_DO);
         map.setMultiTouchControls(true);
         map.getController().setZoom(14.0);
         // Cho phép kéo bản đồ bên trong NestedScrollView/SwipeRefreshLayout
@@ -99,6 +115,7 @@ public class TripMapController {
         daVeChuyen = c.getIdChuyen();
         map.setVisibility(View.VISIBLE);
         map.getOverlays().clear();
+        map.getOverlays().add(new CopyrightOverlay(map.getContext())); // ghi nguồn dữ liệu bản đồ theo giấy phép
 
         Context ctx = map.getContext();
         GeoPoint congTrinh = new GeoPoint(c.getViDoCongTrinh(), c.getKinhDoCongTrinh());
@@ -191,10 +208,17 @@ public class TripMapController {
         double giay;
     }
 
-    /** Gọi OSRM (chạy trên luồng nền). Null nếu lỗi. */
+    /** Thử lần lượt các dịch vụ OSRM (chạy trên luồng nền). Null nếu tất cả đều lỗi. */
     private TuyenDuong layTuyenDuong(GeoPoint tu, GeoPoint den) {
-        String url = String.format(Locale.US, OSRM_URL,
-                tu.getLongitude(), tu.getLatitude(), den.getLongitude(), den.getLatitude());
+        for (String mau : OSRM_URLS) {
+            TuyenDuong t = layTuyenDuong(String.format(Locale.US, mau,
+                    tu.getLongitude(), tu.getLatitude(), den.getLongitude(), den.getLatitude()));
+            if (t != null) return t;
+        }
+        return null;
+    }
+
+    private TuyenDuong layTuyenDuong(String url) {
         Request req = new Request.Builder().url(url).header("User-Agent", userAgent).build();
         try (Response r = http.newCall(req).execute()) {
             if (!r.isSuccessful() || r.body() == null) {
@@ -214,7 +238,7 @@ public class TripMapController {
             return t.diem.size() >= 2 ? t : null;
         } catch (Exception e) {
             // Xem nguyên nhân trong Logcat (lọc "TripMap"), ví dụ SSLHandshakeException / UnknownHostException
-            android.util.Log.w(TAG, "Không lấy được tuyến đường", e);
+            android.util.Log.w(TAG, "Không lấy được tuyến đường từ " + url, e);
             return null;
         }
     }
