@@ -21,6 +21,7 @@ import android.os.Looper;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import com.example.myapplication.api.ApiClient;
 import com.example.myapplication.utils.SessionManager;
 import com.google.gson.Gson;
@@ -87,7 +88,9 @@ public class LocationService extends Service {
         Intent intent = new Intent(context, LocationService.class);
         intent.setAction(ACTION_START);
         if (idChuyenHoacNull != null) intent.putExtra(EXTRA_ID_CHUYEN, idChuyenHoacNull);
-        context.startForegroundService(intent);
+        // startForegroundService() chỉ có từ Android 8 (API 26); ContextCompat tự dùng
+        // startService() trên Android 7 (minSdk 24) để không bị crash.
+        ContextCompat.startForegroundService(context, intent);
     }
 
     public static void stop(Context context) {
