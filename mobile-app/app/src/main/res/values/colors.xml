@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Brand -->
+    <color name="colorPrimary">#4F46E5</color>
+    <color name="colorPrimaryVariant">#3730A3</color>
+    <color name="colorPrimaryLight">#EEF2FF</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+
+    <color name="colorSecondary">#0EA5E9</color>
+    <color name="colorSecondaryVariant">#0284C7</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+
+    <!-- Surfaces -->
+    <color name="colorBackground">#F1F5F9</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorHeader">#1E1B4B</color>
+
+    <!-- Text -->
+    <color name="colorTextPrimary">#0F172A</color>
+    <color name="colorTextSecondary">#64748B</color>
+    <color name="colorTextOnDarkMuted">#C7D2FE</color>
+
+    <color name="colorCardBackground">#FFFFFF</color>
+    <color name="colorCardStroke">#E2E8F0</color>
+
+    <!-- Status -->
+    <color name="colorError">#DC2626</color>
+    <color name="colorErrorLight">#FEE2E2</color>
+    <color name="colorSuccess">#16A34A</color>
+    <color name="colorSuccessLight">#DCFCE7</color>
+    <color name="colorWarning">#D97706</color>
+    <color name="colorWarningLight">#FEF3C7</color>
+    <color name="colorInfoLight">#E0F2FE</color>
+</resources>
