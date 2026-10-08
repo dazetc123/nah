@@ -62,3 +62,4 @@ export function useAuth() {
 }
 
 export const isManager = (s: Session | null) => s?.tenVaiTro === 'Quản lý'
+export const isDispatcher = (s: Session | null) => s?.tenVaiTro === 'Nhân viên điều phối'

@@ -8,6 +8,7 @@ const TITLES: Record<string, string> = {
   '/': 'Tổng quan', '/tai-khoan': 'Tài khoản', '/phan-quyen': 'Phân quyền',
   '/xe': 'Đội xe', '/tram-tron': 'Trạm trộn', '/ho-so': 'Hồ sơ cá nhân',
   '/loai-be-tong': 'Loại bê tông', '/bao-cao-xe': 'Báo cáo xe', '/cong-trinh': 'Công trình', '/dat-be-tong': 'Đặt bê tông', '/don-hang': 'Quản lý đơn hàng',
+  '/dieu-phoi/don-hang': 'Đơn hàng & tạo chuyến', '/dieu-phoi/theo-doi-xe': 'Theo dõi xe', '/dieu-phoi/su-co': 'Sự cố từ tài xế',
 }
 
 /** Khung cho khu vực đã đăng nhập; chặn người chưa đăng nhập hoặc còn bị buộc đổi mật khẩu lần đầu. */

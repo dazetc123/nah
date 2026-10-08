@@ -4,6 +4,7 @@ import { ToastProvider } from './lib/toast'
 import { AuthProvider } from './lib/auth'
 import AppShell from './components/layout/AppShell'
 import RequireManager from './components/layout/RequireManager'
+import RequireDispatcher from './components/layout/RequireDispatcher'
 
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -25,6 +26,9 @@ import CustomerOrdersPage from './pages/CustomerOrdersPage'
 import DriversPage from './pages/DriversPage'
 import DriverTripsPage from './pages/DriverTripsPage'
 import RevenueStatsPage from './pages/RevenueStatsPage'
+import DispatchOrdersPage from './pages/DispatchOrdersPage'
+import DispatchTrackingPage from './pages/DispatchTrackingPage'
+import DispatchIncidentsPage from './pages/DispatchIncidentsPage'
 
 export default function App() {
   return (
@@ -50,6 +54,11 @@ export default function App() {
                 <Route path="/dat-be-tong" element={<ConcreteOrderPage />} />
                 <Route path="/don-hang" element={<CustomerOrdersPage />} />
                 <Route path="/lich-trinh" element={<DriverTripsPage />} />
+                <Route element={<RequireDispatcher />}>
+                  <Route path="/dieu-phoi/don-hang" element={<DispatchOrdersPage />} />
+                  <Route path="/dieu-phoi/theo-doi-xe" element={<DispatchTrackingPage />} />
+                  <Route path="/dieu-phoi/su-co" element={<DispatchIncidentsPage />} />
+                </Route>
                 <Route element={<RequireManager />}>
                   <Route path="/tai-khoan" element={<AccountsPage />} />
                   <Route path="/phan-quyen" element={<RoleAssignmentPage />} />

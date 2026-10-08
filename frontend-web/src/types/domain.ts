@@ -281,3 +281,66 @@ export interface ChuyenResponse {
 
 export interface BaoCaoDongResponse { idDH: number; ngayDat: string; sanLuong: number; doanhThu: number; trangThai: number }
 export interface BaoCaoTongHopResponse { tuNgay: string; denNgay: string; soDonHang: number; soChuyenGiao: number; sanLuongBeTong: number; doanhThu: number; thongBao: string }
+
+/* ===================== Nhân viên điều phối ===================== */
+
+/** TramTronKhaDungResponse.java — trạm còn đủ công suất cho đơn hàng. */
+export interface TramKhaDung {
+  idTram: number
+  tenTram: string
+  diaChi?: string | null
+  congSuat?: number | null
+  trangThai?: number | null
+}
+
+/** DonHangResponse.java phía điều phối (có thêm idTram/tenTram sau khi phân bổ). */
+export interface DonHangDieuPhoi extends DonHang {
+  idTram?: number | null
+  tenTram?: string | null
+}
+
+/** TheoDoiXeResponse.java — trạng thái, vị trí GPS mới nhất và tiến độ tài xế gửi về. */
+export interface TheoDoiXe {
+  idChuyen: number
+  idDH: number
+  idXe: number
+  bienSo: string
+  idTX: number
+  tenTaiXe: string
+  idTram: number
+  tenTram: string
+  trangThaiChuyen: number
+  tenTrangThai: string
+  viDo?: number | null
+  kinhDo?: number | null
+  tocDo?: number | null
+  thoiDiemGPS?: string | null
+  thongBao?: string | null
+  thoiGianXuatPhat?: string | null
+  thoiGianDen?: string | null
+  khoangCachDen?: number | null
+  canKiemTraDen?: boolean | null
+  ghiChuDen?: string | null
+  khoiLuongThucGiao?: number | null
+  thoiGianGiaoXong?: string | null
+  anhMinhChung?: string | null
+  thoiGianHoanThanh?: string | null
+}
+
+/** SuCoResponse.java — sự cố tài xế gửi lên; trangThai 0 mới, 1 đang xử lý, 2 đã xử lý. */
+export interface SuCo {
+  idSuCo: number
+  idChuyen?: number | null
+  bienSo?: string | null
+  tenTaiXe?: string | null
+  nguoiBaoCao?: string | null
+  loaiSuCo: string
+  moTa: string
+  mucDoUuTien?: number | null
+  tenMucDoUuTien?: string | null
+  viTri?: string | null
+  anhMinhChung?: string | null
+  thoiDiem?: string | null
+  trangThai?: number | null
+  tenTrangThai?: string | null
+}

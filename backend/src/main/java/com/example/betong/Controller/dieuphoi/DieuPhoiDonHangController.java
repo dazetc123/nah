@@ -23,8 +23,11 @@ public class DieuPhoiDonHangController {
 
     @GetMapping
     public PageResponse<DonHangResponse> danhSach(@RequestParam(defaultValue = "1") @Min(1) int trang,
-                                                   @RequestParam(defaultValue = "20") @Min(1) int soLuong) {
-        return service.danhSachChoXuLy(trang, soLuong);
+                                                   @RequestParam(defaultValue = "20") @Min(1) int soLuong,
+                                                   @RequestParam(required = false) Integer trangThai) {
+        // Không truyền trangThai: giữ hành vi cũ (chỉ đơn Chờ xử lý)
+        return trangThai == null ? service.danhSachChoXuLy(trang, soLuong)
+                : service.danhSachTheoTrangThai(trangThai, trang, soLuong);
     }
 
     @GetMapping("/{idDH}")

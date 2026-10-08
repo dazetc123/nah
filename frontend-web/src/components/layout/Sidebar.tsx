@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { Factory, LayoutDashboard, LogOut, ShieldCheck, Truck, User, Users, X, Activity, Boxes, FileWarning, Building2, ShoppingCart } from 'lucide-react'
+import { Factory, LayoutDashboard, LogOut, ShieldCheck, Truck, User, Users, X, Activity, Boxes, FileWarning, Building2, ShoppingCart, ClipboardList, Navigation, Siren } from 'lucide-react'
 import type { Session } from '../../types/domain'
 import { isManager } from '../../lib/auth'
 import { profileApi } from '../../lib/api'
@@ -54,7 +54,13 @@ export default function Sidebar({ session, open, onClose, onLogout }: { session:
         {session.tenVaiTro === 'Khách hàng' && link('/don-hang', 'Quản lý đơn hàng', ShoppingCart)}
         {session.tenVaiTro === 'Tài xế' && link('/lich-trinh', 'Lịch trình chuyến đi', Truck)}
         {session.tenVaiTro === 'Tài xế' && link('/bao-cao-xe', 'Báo cáo tình trạng xe', FileWarning)}
-        {session.tenVaiTro === 'Nhân viên điều phối' && link('/bao-cao-xe', 'Báo cáo tình trạng xe', FileWarning)}
+        {session.tenVaiTro === 'Nhân viên điều phối' && <>
+          <p className="nav-caption" style={{ marginTop: 18 }}>ĐIỀU PHỐI</p>
+          {link('/dieu-phoi/don-hang', 'Đơn hàng & tạo chuyến', ClipboardList)}
+          {link('/dieu-phoi/theo-doi-xe', 'Theo dõi xe', Navigation)}
+          {link('/dieu-phoi/su-co', 'Sự cố từ tài xế', Siren)}
+          {link('/bao-cao-xe', 'Báo cáo tình trạng xe', FileWarning)}
+        </>}
         <p className="nav-caption" style={{ marginTop: 18 }}>CÁ NHÂN</p>
         {link('/ho-so', 'Hồ sơ cá nhân', User)}
       </nav>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Factory, ShieldCheck, Truck, User, Users, Info, Boxes, FileWarning, Building2, ShoppingCart } from 'lucide-react'
+import { Factory, ShieldCheck, Truck, User, Users, Info, Boxes, FileWarning, Building2, ShoppingCart, ClipboardList, Navigation, Siren } from 'lucide-react'
 import { useAuth, isManager } from '../lib/auth'
 
 const CARDS = [
@@ -29,6 +29,11 @@ export default function HomePage() {
         </div>
       )}
       {session.tenVaiTro === 'Tài xế' && <div className="quick-grid" style={{ marginTop: 14 }}><Link to="/bao-cao-xe" className="quick"><FileWarning size={22} /><b>Báo cáo tình trạng xe</b><span>Gửi nội dung và ảnh minh chứng cho xe đang phụ trách</span></Link></div>}
+      {session.tenVaiTro === 'Nhân viên điều phối' && <div className="quick-grid" style={{ marginTop: 14 }}>
+        <Link to="/dieu-phoi/don-hang" className="quick"><ClipboardList size={22} /><b>Đơn hàng & tạo chuyến</b><span>Duyệt đơn, phân bổ trạm trộn, giao chuyến cho tài xế</span></Link>
+        <Link to="/dieu-phoi/theo-doi-xe" className="quick"><Navigation size={22} /><b>Theo dõi xe</b><span>Trạng thái, vị trí GPS và tiến độ các chuyến đang chạy</span></Link>
+        <Link to="/dieu-phoi/su-co" className="quick"><Siren size={22} /><b>Sự cố từ tài xế</b><span>Tiếp nhận và cập nhật xử lý sự cố</span></Link>
+      </div>}
       {session.tenVaiTro === 'Khách hàng' && <div className="quick-grid" style={{ marginTop: 14 }}><Link to="/dat-be-tong" className="quick"><ShoppingCart size={22} /><b>Đặt bê tông</b><span>Chọn mác, khối lượng và thời gian giao hàng</span></Link></div>}
       <div className="quick-grid" style={{ marginTop: 14 }}>
         <Link to="/ho-so" className="quick"><User size={22} /><b>Hồ sơ cá nhân</b><span>Xem, cập nhật thông tin và đổi mật khẩu</span></Link>

@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface DieuPhoiDonHangService {
     PageResponse<DonHangResponse> danhSachChoXuLy(int trang, int soLuong);
+
+    /** Danh sách đơn theo trạng thái (0 chờ xử lý, 1 đã xác nhận, 6 đã phân bổ trạm, ...) cho trang web điều phối. */
+    PageResponse<DonHangResponse> danhSachTheoTrangThai(int trangThai, int trang, int soLuong);
     DonHangResponse chiTiet(Long idDH);
     DonHangResponse xacNhan(Long idDH);
     DonHangResponse tuChoi(Long idDH, TuChoiDonHangRequest request);

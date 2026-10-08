@@ -49,6 +49,13 @@ public class DieuPhoiDonHangServiceImpl implements DieuPhoiDonHangService {
 
     @Override
     @Transactional(readOnly = true)
+    public PageResponse<DonHangResponse> danhSachTheoTrangThai(int trangThai, int trang, int soLuong) {
+        return PageResponse.tu(donHangRepository.findByTrangThaiOrderByNgayDatAscIdDHAsc(
+                trangThai, PageRequest.of(Math.max(0, trang - 1), Math.max(1, soLuong))), this::sangResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public DonHangResponse chiTiet(Long idDH) {
         return sangResponse(timDonHang(idDH));
     }

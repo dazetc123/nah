@@ -3,7 +3,8 @@ import type {
   LoginResponse, PageResponse, TaiKhoan, TaoTaiKhoanForm, TaoTaiKhoanResponse,
   ThongBaoResponse, TramTron, TramTronForm, Xe, XeForm,
   TaiXe, TaiXeForm, LoaiBeTong, LoaiBeTongForm, BaoCaoTinhTrangXe, CongTrinh, CongTrinhForm, DatBeTong, DatBeTongForm, DonHang,
-  ChuyenResponse, BaoCaoDongResponse, BaoCaoTongHopResponse
+  ChuyenResponse, BaoCaoDongResponse, BaoCaoTongHopResponse,
+  DonHangDieuPhoi, TramKhaDung, TheoDoiXe, SuCo
 } from '../../types/domain'
 
 type Paged<T> = Promise<PageResponse<T>>
@@ -161,4 +162,35 @@ export const reportApi = {
 
 export const driverTripsApi = {
   list: (tuKhoa: string, trang: number, soLuong: number) => request<PageResponse<ChuyenResponse>>('/api/dieu-phoi/chuyen-xe' + pageQuery(tuKhoa, trang, soLuong))
+}
+
+/* ===================== Nhân viên điều phối ===================== */
+
+export const dispatchOrderApi = {
+  /** trangThai: 0 chờ xử lý, 1 đã xác nhận, 6 đã phân bổ trạm. */
+  list: (trangThai: number, trang: number, soLuong: number): Paged<DonHangDieuPhoi> =>
+    request(`/api/dieu-phoi/don-hang${query({ trangThai, trang, soLuong })}`),
+  confirm: (idDH: number) => request<DonHangDieuPhoi>(`/api/dieu-phoi/don-hang/${idDH}/xac-nhan`, { method: 'PUT' }),
+  reject: (idDH: number, lyDo: string) =>
+    request<DonHangDieuPhoi>(`/api/dieu-phoi/don-hang/${idDH}/tu-choi`, { method: 'PUT', body: { lyDo } }),
+  plants: (idDH: number) => request<TramKhaDung[]>(`/api/dieu-phoi/don-hang/${idDH}/tram-tron-kha-dung`),
+  assignPlant: (idDH: number, idTram: number) =>
+    request<DonHangDieuPhoi>(`/api/dieu-phoi/don-hang/${idDH}/phan-bo-tram-tron/${idTram}`, { method: 'PUT' }),
+}
+
+export const dispatchTripApi = {
+  freeVehicles: (): Paged<Xe> => request(`/api/dieu-phoi/xe${query({ trang: 1, soLuong: 100 })}`),
+  freeDrivers: (): Paged<TaiXe> => request(`/api/dieu-phoi/xe/tai-xe${query({ trang: 1, soLuong: 100 })}`),
+  create: (body: { idDH: number; idTram: number; idXe: number; idTX: number }) =>
+    request<ChuyenResponse>('/api/dieu-phoi/xe/chuyen', { method: 'POST', body }),
+  tracking: (trang: number, soLuong: number): Paged<TheoDoiXe> =>
+    request(`/api/dieu-phoi/theo-doi-xe${query({ trang, soLuong })}`),
+}
+
+export const dispatchIncidentApi = {
+  /** trangThai: 0 mới, 1 đang xử lý, 2 đã xử lý; undefined = tất cả. */
+  list: (trangThai: number | undefined, trang: number, soLuong: number): Paged<SuCo> =>
+    request(`/api/dieu-phoi/su-co${query({ trangThai, trang, soLuong })}`),
+  setStatus: (idSuCo: number, trangThai: 1 | 2) =>
+    request<SuCo>(`/api/dieu-phoi/su-co/${idSuCo}/trang-thai`, { method: 'PUT', body: { trangThai } }),
 }
