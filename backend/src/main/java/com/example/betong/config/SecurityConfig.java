@@ -82,8 +82,12 @@ public class SecurityConfig {
                         // "Nhân viên điều phối" chứa khoảng trắng nên hasRole() vẫn khớp
                         // đúng vì JwtAuthenticationFilter gán authority y nguyên "ROLE_" + vaiTro.
                         .requestMatchers("/api/quan-ly/**", "/api/admin/**").hasRole("Quản lý")
+                        // Chỉ điều phối được tạo chuyến (rule cụ thể phải đứng trước /api/dieu-phoi/xe/**)
+                        .requestMatchers("/api/dieu-phoi/xe/chuyen").hasRole("Nhân viên điều phối")
                         .requestMatchers("/api/dieu-phoi/xe/**", "/api/dieu-phoi/theo-doi-xe/**")
                         .hasAnyRole("Tài xế", "Nhân viên điều phối")
+                        // Các API điều phối còn lại (duyệt đơn hàng, xử lý sự cố): không cho Tài xế/Khách hàng gọi
+                        .requestMatchers("/api/dieu-phoi/**").hasAnyRole("Nhân viên điều phối", "Quản lý")
 
                         // Mục 2.2 báo cáo - App di động Tài xế: Quản lý chuyến, Gửi vị trí
                         // GPS, Cập nhật trạng thái. Chỉ vai trò Tài xế được gọi.

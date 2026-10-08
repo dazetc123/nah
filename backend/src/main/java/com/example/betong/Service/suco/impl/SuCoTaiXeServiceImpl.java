@@ -131,6 +131,31 @@ public class SuCoTaiXeServiceImpl implements SuCoTaiXeService {
                 taiXe.getIdTX(), PageRequest.of(Math.max(0, trang - 1), Math.max(1, soLuong))), this::sangResponse);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<SuCoResponse> danhSachChoDieuPhoi(Integer trangThai, int trang, int soLuong) {
+        return PageResponse.tu(suCoRepository.timChoDieuPhoi(trangThai,
+                PageRequest.of(Math.max(0, trang - 1), Math.max(1, soLuong))), this::sangResponse);
+    }
+
+    @Override
+    @Transactional
+    public SuCoResponse capNhatTrangThai(Long idSuCo, Integer trangThai) {
+        SuCo suCo = suCoRepository.findById(idSuCo)
+                .filter(s -> s.getChuyen() != null)
+                .orElseThrow(() -> new AppException("Không tìm thấy sự cố", HttpStatus.NOT_FOUND));
+        if (trangThai == null || (trangThai != SU_CO_DANG_XU_LY && trangThai != SU_CO_DA_XU_LY)) {
+            throw new AppException("Trạng thái chỉ được là 1 (Đang xử lý) hoặc 2 (Đã xử lý)", HttpStatus.BAD_REQUEST);
+        }
+        int hienTai = suCo.getTrangThai() == null ? SU_CO_MOI : suCo.getTrangThai();
+        if (trangThai <= hienTai) {
+            throw new AppException("Sự cố đang ở trạng thái " + tenTrangThai(hienTai)
+                    + ", không thể chuyển về " + tenTrangThai(trangThai), HttpStatus.CONFLICT);
+        }
+        suCo.setTrangThai(trangThai);
+        return sangResponse(suCoRepository.save(suCo));
+    }
+
     private Chuyen timChuyenDangThucHien(TaiXe taiXe, Long idChuyen) {
         if (idChuyen == null) {
             List<Chuyen> dangThucHien = chuyenRepository.timChuyenDangThucHien(taiXe.getIdTX());
@@ -155,6 +180,8 @@ public class SuCoTaiXeServiceImpl implements SuCoTaiXeService {
                 .idSuCo(s.getIdSuCo())
                 .idChuyen(s.getChuyen() == null ? null : s.getChuyen().getIdChuyen())
                 .bienSo(s.getXe() == null ? null : s.getXe().getBienSo())
+                .tenTaiXe(s.getTaiXe() == null ? null : s.getTaiXe().getHoTen())
+                .nguoiBaoCao(s.getNguoiBaoCao())
                 .loaiSuCo(s.getLoaiSuCo())
                 .moTa(s.getMoTa())
                 .mucDoUuTien(s.getMucDoUuTien())

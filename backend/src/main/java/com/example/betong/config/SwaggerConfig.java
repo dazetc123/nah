@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     private static final String SECURITY_SCHEME_NAME = "bearerAuth";
+    /** Mọi API /api/** đều bắt buộc header ClientKey (xem ClientKeyFilter) — khai báo để nhập được trong nút Authorize. */
+    private static final String CLIENT_KEY_SCHEME = "clientKey";
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -25,13 +27,19 @@ public class SwaggerConfig {
                         .description("Tài liệu API cho hệ thống quản lý, đặt hàng bê tông "
                                 + "và điều phối vận chuyển theo thời gian thực.")
                         .version("v1.0"))
-                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
+                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME).addList(CLIENT_KEY_SCHEME))
                 .components(new Components()
                         .addSecuritySchemes(SECURITY_SCHEME_NAME,
                                 new SecurityScheme()
                                         .name(SECURITY_SCHEME_NAME)
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
-                                        .bearerFormat("JWT")));
+                                        .bearerFormat("JWT"))
+                        .addSecuritySchemes(CLIENT_KEY_SCHEME,
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.APIKEY)
+                                        .in(SecurityScheme.In.HEADER)
+                                        .name("ClientKey")
+                                        .description("Web: betong-web-local · App: betongmobile")));
     }
 }

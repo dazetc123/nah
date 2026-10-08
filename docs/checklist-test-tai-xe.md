@@ -253,7 +253,7 @@ SELECT iddh, trang_thai FROM don_hang;  -- 4 = Hoàn thành
 | 3.4.6 | Chọn **Hỏng xe** hoặc **Tai nạn** | Mức độ tự chuyển sang **Cao** (luồng 6.a) | 🟢 API / 🔵 app | |
 | 3.4.7 | Điền đủ + ảnh → **Gửi báo cáo** | Hộp thoại "Đã gửi báo cáo sự cố": mã sự cố, chuyến, loại, mức độ, **Trạng thái xử lý: Mới tiếp nhận** | 🟢 | |
 | 3.4.8 | Kiểm tra DB `su_co` | Có bản ghi gắn `id_chuyen`, `id_xe`, `idtx`, `dia_chi_hu` = tọa độ, `muc_do_uu_tien`, `trang_thai = 0`, URL ảnh | 🟢 | |
-| 3.4.9 | Bước 6: log backend | Có "Sự cố #… cần Nhân viên điều phối xử lý", hoặc "[KHẨN] … cần điều động xe thay thế" nếu là Hỏng xe / Tai nạn | 🟢 | |
+| 3.4.9 | Bước 6: log backend (xem cách đọc log ở mục 7 của `checklist-test-dieu-phoi.md`) | Có "Sự cố #… cần Nhân viên điều phối xử lý", hoặc "[KHẨN] … cần điều động xe thay thế" nếu là Hỏng xe / Tai nạn. Điều phối thấy sự cố qua `GET /api/dieu-phoi/su-co` | 🟢 | |
 | 3.4.10 | Từ trang chủ khi **không** có chuyến đang thực hiện → Gửi | Snackbar "Bạn không có chuyến nào đang thực hiện để báo cáo sự cố" | 🟢 | |
 | 3.4.11 | Đã nhập dữ liệu rồi bấm Back | Hỏi "Thoát báo cáo?" | 🔵 | |
 | 3.4.12 | Luồng 4.b: mất mạng khi gửi | Snackbar lỗi mạng | 🔵 / ⚪ phần lưu tạm | |

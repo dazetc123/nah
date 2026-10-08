@@ -64,7 +64,11 @@ public class TheoDoiXeServiceImpl implements TheoDoiXeService {
                 .trangThaiChuyen(c.getTrangThai()).tenTrangThai(tenTrangThai(c.getTrangThai()))
                 .viDo(gps == null ? null : gps.getViDo()).kinhDo(gps == null ? null : gps.getKinhDo())
                 .tocDo(gps == null ? null : gps.getTocDo())
-                .thoiDiemGPS(gps == null ? null : gps.getThoiDiem()).build();
+                .thoiDiemGPS(gps == null ? null : gps.getThoiDiem())
+                .thoiGianXuatPhat(c.getThoiGianXuatPhat()).thoiGianDen(c.getThoiGianDen())
+                .khoangCachDen(c.getKhoangCachDen()).canKiemTraDen(c.getCanKiemTraDen()).ghiChuDen(c.getGhiChuDen())
+                .khoiLuongThucGiao(c.getKhoiLuongThucGiao()).thoiGianGiaoXong(c.getThoiGianGiaoXong())
+                .anhMinhChung(c.getAnhMinhChung()).thoiGianHoanThanh(c.getThoiGianHoanThanh()).build();
     }
 
     private String tenTrangThai(Integer status) {

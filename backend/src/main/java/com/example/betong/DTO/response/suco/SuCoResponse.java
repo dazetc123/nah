@@ -14,6 +14,8 @@ public class SuCoResponse {
     private Long idSuCo;
     private Long idChuyen;
     private String bienSo;
+    private String tenTaiXe;
+    private String nguoiBaoCao;
     private String loaiSuCo;
     private String moTa;
     private Integer mucDoUuTien;

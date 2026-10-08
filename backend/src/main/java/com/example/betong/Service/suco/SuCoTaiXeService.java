@@ -15,4 +15,10 @@ public interface SuCoTaiXeService {
                             Integer mucDoUuTien, Double viDo, Double kinhDo, MultipartFile anh);
 
     PageResponse<SuCoResponse> danhSachSuCoCuaToi(String tenDangNhap, int trang, int soLuong);
+
+    /** Bước 6 / luồng 6.a: Nhân viên điều phối xem danh sách sự cố tài xế gửi lên. */
+    PageResponse<SuCoResponse> danhSachChoDieuPhoi(Integer trangThai, int trang, int soLuong);
+
+    /** Điều phối cập nhật trạng thái xử lý: 1 = Đang xử lý, 2 = Đã xử lý. */
+    SuCoResponse capNhatTrangThai(Long idSuCo, Integer trangThai);
 }
