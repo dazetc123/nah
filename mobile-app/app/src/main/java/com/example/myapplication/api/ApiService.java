@@ -66,6 +66,20 @@ public interface ApiService {
                                         @Part("ghiChu") RequestBody ghiChu,
                                         @Part MultipartBody.Part anhMinhChung);
 
+    /** Xe đang được gán cho tài xế: idXe, bienSo, trangThai (1 hoạt động / 0 bảo trì), dangCoChuyen. */
+    @GET("api/tai-xe/xe-cua-toi")
+    Call<java.util.Map<String, Object>> getXeCuaToi();
+
+    /** Báo cáo tình trạng xe: 1 = đang hoạt động (sửa xong), 0 = bảo trì / hỏng (bắt buộc thông tin + ảnh). */
+    @Multipart
+    @POST("api/dieu-phoi/xe/{idXe}/bao-cao")
+    Call<ResponseBody> baoCaoTinhTrangXe(@Path("idXe") long idXe,
+                                         @Part("trangThaiXe") RequestBody trangThaiXe,
+                                         @Part("diaChiHu") RequestBody diaChiHu,
+                                         @Part("nguyenNhan") RequestBody nguyenNhan,
+                                         @Part("noiDung") RequestBody noiDung,
+                                         @Part MultipartBody.Part anh);
+
     /** Sự cố tài xế đã báo, kèm trạng thái xử lý của điều phối. */
     @GET("api/tai-xe/su-co")
     Call<PageResponse<SuCo>> getSuCoCuaToi(@Query("trang") int trang, @Query("soLuong") int soLuong);

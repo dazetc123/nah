@@ -25,6 +25,30 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Xe đang được gán cho tài xế + trạng thái hiện tại -->
+            <TextView
+                android:id="@+id/tvXeInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_icon_indigo"
+                android:padding="12dp"
+                android:text="Đang tải thông tin xe..."
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="14sp"/>
+
+            <!-- Xe đang có chuyến dở: hướng sang Báo cáo sự cố -->
+            <TextView
+                android:id="@+id/tvCanhBao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_icon_amber"
+                android:padding="12dp"
+                android:textColor="@color/colorWarning"
+                android:textSize="13sp"
+                android:visibility="gone"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -44,6 +68,91 @@
             <include android:id="@+id/optReady" layout="@layout/item_status_option"/>
             <include android:id="@+id/optMaintenance" layout="@layout/item_status_option"/>
             <include android:id="@+id/optBroken" layout="@layout/item_status_option"/>
+
+            <!-- Chỉ hiện khi chọn Bảo trì / Hỏng: bắt buộc thông tin và ảnh -->
+            <LinearLayout
+                android:id="@+id/formChiTiet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilViTri"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Vị trí xe hiện tại (địa chỉ hoặc tọa độ)"
+                    app:startIconDrawable="@drawable/ic_location">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etViTri"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPostalAddress"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGps"
+                    style="@style/Driver.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Lấy vị trí hiện tại"
+                    app:icon="@drawable/ic_location"
+                    app:iconGravity="textStart"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilNguyenNhan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Nguyên nhân (VD: hỏng phanh, bảo dưỡng định kỳ)">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNguyenNhan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilMoTa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Mô tả tình trạng xe"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="255">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etMoTa"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLength="255"
+                        android:minLines="3"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/ivPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_icon_indigo"
+                    android:contentDescription="Ảnh tình trạng xe"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnChonAnh"
+                    style="@style/Driver.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Chọn ảnh xe (bắt buộc)"
+                    app:icon="@drawable/ic_camera"
+                    app:iconGravity="textStart"/>
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

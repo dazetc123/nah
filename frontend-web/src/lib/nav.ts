@@ -47,7 +47,6 @@ const DISPATCHER: NavItem[] = [
   { to: '/dieu-phoi/don-hang', label: 'Đơn hàng & tạo chuyến', desc: 'Duyệt đơn, phân bổ trạm, giao chuyến cho tài xế', icon: ClipboardList },
   { to: '/dieu-phoi/theo-doi-xe', label: 'Theo dõi xe', desc: 'Trạng thái, vị trí GPS và tiến độ các chuyến', icon: Navigation },
   { to: '/dieu-phoi/su-co', label: 'Sự cố từ tài xế', desc: 'Tiếp nhận và xử lý sự cố tài xế báo lên', icon: Siren },
-  { to: '/bao-cao-xe', label: 'Báo cáo tình trạng xe', desc: 'Gửi sự cố kèm vị trí và ảnh', icon: FileWarning },
 ]
 
 export const HOME: NavItem = { to: '/', label: 'Tổng quan', desc: 'Trang chủ', icon: LayoutDashboard, end: true }

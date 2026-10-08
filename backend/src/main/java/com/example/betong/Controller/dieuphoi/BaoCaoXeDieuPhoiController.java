@@ -14,11 +14,12 @@ public class BaoCaoXeDieuPhoiController {
     @PostMapping(value = "/{id}/bao-cao", consumes = "multipart/form-data")
     public BaoCaoTinhTrangXeResponse taoBaoCao(@PathVariable Long id,
             @RequestParam("trangThaiXe") Integer trangThaiXe,
-            @RequestParam("diaChiHu") String diaChiHu,
-            @RequestParam("soDienThoaiTaiXe") String soDienThoaiTaiXe,
-            @RequestParam("nguyenNhan") String nguyenNhan,
-            @RequestParam("noiDung") String noiDung,
-            @RequestPart("anh") MultipartFile anh, Authentication authentication) {
+            // Báo "Đang hoạt động" (sửa xong) thì các trường dưới không bắt buộc; service kiểm tra khi báo bảo trì
+            @RequestParam(value = "diaChiHu", required = false) String diaChiHu,
+            @RequestParam(value = "soDienThoaiTaiXe", required = false) String soDienThoaiTaiXe,
+            @RequestParam(value = "nguyenNhan", required = false) String nguyenNhan,
+            @RequestParam(value = "noiDung", required = false) String noiDung,
+            @RequestPart(value = "anh", required = false) MultipartFile anh, Authentication authentication) {
         return service.taoBaoCao(id, authentication.getName(), trangThaiXe, diaChiHu,
                 soDienThoaiTaiXe, nguyenNhan, noiDung, anh);
     }

@@ -58,7 +58,7 @@ Tài khoản (mật khẩu đều là `123456789`):
 |---|------|------------------|-----------|-----------|
 | 0.1 | Chạy backend | Có dòng `Started BetongApplication` | 🟢 | |
 | 0.2 | Chạy web, mở `http://localhost:5173` | Hiện trang đăng nhập BetongOps | 🟢 | |
-| 0.3 | Đăng nhập web bằng `dieuphoi01` | Vào trang Tổng quan, góc dưới trái ghi "Nhân viên điều phối". Menu có nhóm **ĐIỀU PHỐI** gồm: Đơn hàng & tạo chuyến, Theo dõi xe, Sự cố từ tài xế, Báo cáo tình trạng xe | 🟢 | |
+| 0.3 | Đăng nhập web bằng `dieuphoi01` | Vào trang Tổng quan, góc dưới trái ghi "Nhân viên điều phối". Menu có nhóm **ĐIỀU PHỐI** gồm: Đơn hàng & tạo chuyến, Theo dõi xe, Sự cố từ tài xế | 🟢 | |
 | 0.4 | Trang Tổng quan | Có 3 ô lối tắt: Đơn hàng & tạo chuyến, Theo dõi xe, Sự cố từ tài xế | 🔵 | |
 | 0.5 | Đăng nhập **app** bằng `dieuphoi01` | App báo "Ứng dụng này chỉ dành cho tài khoản Tài xế" (đúng thiết kế) | 🟢 | |
 
@@ -159,6 +159,17 @@ Trang **tự làm mới mỗi 15 giây**.
 | Kết quả end-to-end | Pass/Fail |
 |--------------------|-----------|
 | Toàn bộ 7 bước | |
+
+---
+
+## 6b. Xe bảo trì (tài xế báo từ app)
+
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 6b.1 | **App (taixe03, không có chuyến dở):** **Trạng thái xe** → **Đang bảo trì** → điền vị trí, nguyên nhân, mô tả, ảnh → Cập nhật | "Xe đã chuyển sang Bảo trì…" | 🟢 API | |
+| 6b.2 | **Web (điều phối):** Tạo chuyến cho một đơn | Xe `29C-333.33` **không còn** trong ô "Xe rảnh" | 🟢 | |
+| 6b.3 | **App:** **Trạng thái xe** → **Sẵn sàng hoạt động** → Cập nhật (không cần ảnh) | Web: xe `29C-333.33` xuất hiện lại trong "Xe rảnh" | 🟢 | |
+| 6b.4 | **Web (quanly01):** menu **Báo cáo sự cố** | Thấy 2 báo cáo của xe 29C-333.33 (Bảo trì, rồi Sẵn sàng). **Không** lẫn sự cố trong chuyến (sự cố chuyến chỉ ở trang của điều phối) | 🟢 | |
 
 ---
 

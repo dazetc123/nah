@@ -59,7 +59,6 @@ export default function Sidebar({ session, open, onClose, onLogout }: { session:
           {link('/dieu-phoi/don-hang', 'Đơn hàng & tạo chuyến', ClipboardList)}
           {link('/dieu-phoi/theo-doi-xe', 'Theo dõi xe', Navigation)}
           {link('/dieu-phoi/su-co', 'Sự cố từ tài xế', Siren)}
-          {link('/bao-cao-xe', 'Báo cáo tình trạng xe', FileWarning)}
         </>}
         <p className="nav-caption" style={{ marginTop: 18 }}>CÁ NHÂN</p>
         {link('/ho-so', 'Hồ sơ cá nhân', User)}

@@ -10,6 +10,9 @@ import org.springframework.data.repository.query.Param;
 public interface SuCoRepository extends JpaRepository<SuCo, Long> {
     Page<SuCo> findAllByXeIsNotNullOrderByThoiDiemDesc(Pageable pageable);
 
+    /** Trang "Báo cáo lỗi xe" của Quản lý: chỉ báo cáo tình trạng xe, không lẫn sự cố trong chuyến. */
+    Page<SuCo> findAllByXeIsNotNullAndChuyenIsNullOrderByThoiDiemDesc(Pageable pageable);
+
     /** Mục 2.2.3 - danh sách sự cố gắn với chuyến mà chính tài xế đã báo cáo. */
     Page<SuCo> findAllByTaiXe_IdTXAndChuyenIsNotNullOrderByThoiDiemDesc(Long idTX, Pageable pageable);
 

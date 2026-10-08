@@ -260,6 +260,19 @@ SELECT iddh, trang_thai FROM don_hang;  -- 4 = Hoàn thành
 | 3.4.13 | Thông báo đẩy (push) thật tới điều phối | | ⚪ Hệ thống hiện chỉ ghi log, giống các thông báo khác của dự án | |
 | 3.4.14 | Trang chủ → **Sự cố đã báo** (hoặc nút "Xem trạng thái xử lý" sau khi gửi) | Danh sách sự cố đã gửi, nhãn trạng thái: vàng **Mới tiếp nhận** / tím **Đang xử lý** / xanh **Đã xử lý**. Khi điều phối bấm trên web, màn hình tự cập nhật trong ≤ 15 giây | 🔵 | |
 
+### 3.5 Trạng thái xe (báo bảo trì / sửa xong)
+
+Dùng khi xe **cần bảo trì hoặc đã sửa xong**, tách khỏi chuyến. Xe bảo trì sẽ bị khóa: điều phối không giao chuyến cho xe này. Sự cố **trong lúc chạy chuyến** thì dùng **Báo cáo sự cố** (mục 3.4).
+
+| # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
+|---|----------|----------|-----------|-----------|
+| 3.5.1 | Trang chủ → **Trạng thái xe** | Ô trên cùng: "Xe 29C-… · Hiện tại: Đang hoạt động" | 🟢 API | |
+| 3.5.2 | Tài xế **đang có chuyến chưa hoàn thành** (kể cả Chờ nhận) | Có khung vàng báo chưa báo bảo trì được. Chọn Bảo trì → Cập nhật thì hiện hộp thoại "Xe đang có chuyến" + nút **Mở Báo cáo sự cố** | 🟢 API trả 409 | |
+| 3.5.3 | Tài xế rảnh (ví dụ `taixe03`) → chọn **Đang bảo trì** | Hiện thêm form: vị trí (tự điền GPS), nguyên nhân, mô tả, ảnh | 🔵 | |
+| 3.5.4 | Bỏ trống → Cập nhật | Báo lỗi từng ô, "Vui lòng chọn ảnh tình trạng xe" | 🟢 API | |
+| 3.5.5 | Điền đủ + ảnh → Cập nhật | "Xe đã chuyển sang Bảo trì…". DB `xe.trang_thai = 0` | 🟢 | |
+| 3.5.6 | Chọn **Sẵn sàng hoạt động** → Cập nhật | Không cần ảnh. "Xe đã sẵn sàng hoạt động…". DB `xe.trang_thai = 1` | 🟢 | |
+
 ---
 
 ## 4. Kịch bản test trọn một chuyến (end-to-end)

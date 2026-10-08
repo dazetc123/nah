@@ -22,10 +22,12 @@ public class BaoCaoTinhTrangXeServiceImpl implements BaoCaoTinhTrangXeService {
     private final TaiXeRepository taiXeRepository;
     private final SuCoRepository repository;
     private final FileStorageService fileStorageService;
+    private final ChuyenRepository chuyenRepository;
 
     public BaoCaoTinhTrangXeServiceImpl(XeRepository xeRepository, TaiKhoanRepository taiKhoanRepository,
             TaiXeRepository taiXeRepository, SuCoRepository repository,
-            FileStorageService fileStorageService) {
+            FileStorageService fileStorageService, ChuyenRepository chuyenRepository) {
+        this.chuyenRepository = chuyenRepository;
         this.xeRepository = xeRepository;
         this.taiKhoanRepository = taiKhoanRepository;
         this.taiXeRepository = taiXeRepository;
@@ -50,24 +52,36 @@ public class BaoCaoTinhTrangXeServiceImpl implements BaoCaoTinhTrangXeService {
             throw new AppException("Trạng thái xe chỉ được là đang hoạt động (1) hoặc bảo trì (0)",
                     HttpStatus.BAD_REQUEST);
         }
-        kiemTra(diaChiHu, "Địa chỉ xe bị hư");
-        kiemTra(nguyenNhan, "Nguyên nhân");
-        kiemTra(noiDung, "Nội dung lỗi");
+        boolean baoBaoTri = trangThaiXe == 0;
+        if (baoBaoTri) {
+            // Xe đang có chuyến chưa hoàn thành: khoá xe lúc này sẽ bỏ dở chuyến, phải để điều phối xử lý
+            if (chuyenRepository.xeDangBan(xe.getIdXe())) {
+                throw new AppException("Xe đang có chuyến chưa hoàn thành. Nếu xe gặp sự cố trong lúc chạy chuyến, "
+                        + "hãy dùng Báo cáo sự cố để điều phối xử lý; báo bảo trì sau khi kết thúc chuyến",
+                        HttpStatus.CONFLICT);
+            }
+            kiemTra(diaChiHu, "Địa chỉ xe bị hư");
+            kiemTra(nguyenNhan, "Nguyên nhân");
+            kiemTra(noiDung, "Nội dung lỗi");
+        }
+        // Báo "Đang hoạt động" (đã sửa xong): không bắt buộc địa chỉ hư, nguyên nhân, ảnh
+        String noiDungLuu = noiDung == null || noiDung.isBlank() ? "Xe đã sẵn sàng hoạt động trở lại" : noiDung.trim();
         xe.setTrangThai(trangThaiXe);
         xeRepository.save(xe);
         SuCo report = SuCo.builder().xe(xe).taiXe(taiXe)
                 .nguoiBaoCao(taiKhoan.getHoTen() != null ? taiKhoan.getHoTen() : taiKhoan.getTenDangNhap())
-                .trangThaiXe(trangThaiXe).diaChiHu(diaChiHu.trim())
-                .nguyenNhan(nguyenNhan.trim()).moTa(noiDung.trim())
-                .anhMinhChung(fileStorageService.storeImage(anh, "bao-cao-xe"))
-                .thoiDiem(LocalDateTime.now()).moTa(noiDung.trim()).loaiSuCo("Báo cáo tình trạng xe").build();
+                .trangThaiXe(trangThaiXe).diaChiHu(diaChiHu == null || diaChiHu.isBlank() ? null : diaChiHu.trim())
+                .nguyenNhan(nguyenNhan == null || nguyenNhan.isBlank() ? null : nguyenNhan.trim())
+                .anhMinhChung(baoBaoTri || (anh != null && !anh.isEmpty())
+                        ? fileStorageService.storeImage(anh, "bao-cao-xe") : null)
+                .thoiDiem(LocalDateTime.now()).moTa(noiDungLuu).loaiSuCo("Báo cáo tình trạng xe").build();
         return sangResponse(repository.save(report));
     }
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<BaoCaoTinhTrangXeResponse> danhSachBaoCao(int trang, int soLuong) {
-        return PageResponse.tu(repository.findAllByXeIsNotNullOrderByThoiDiemDesc(
+        return PageResponse.tu(repository.findAllByXeIsNotNullAndChuyenIsNullOrderByThoiDiemDesc(
                 PageRequest.of(Math.max(0, trang - 1), Math.max(1, soLuong))), this::sangResponse);
     }
 
