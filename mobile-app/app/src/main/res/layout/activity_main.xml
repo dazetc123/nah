@@ -182,6 +182,10 @@
         <include
             android:id="@+id/rowGps"
             layout="@layout/item_menu_row"/>
+        <!-- Sự cố đã báo (trạng thái xử lý của điều phối) -->
+        <include
+            android:id="@+id/rowIncidents"
+            layout="@layout/item_menu_row"/>
         <!-- Profile -->
         <include
             android:id="@+id/rowProfile"

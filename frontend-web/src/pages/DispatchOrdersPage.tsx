@@ -14,7 +14,7 @@ import type { DonHangDieuPhoi, TaiXe, TramKhaDung, Xe } from '../types/domain'
 
 /** Các bước duyệt đơn của điều phối: Chờ xử lý (0) → Đã xác nhận (1) → Đã phân bổ trạm (6) → Tạo chuyến. */
 const TABS = [
-  { trangThai: 0, label: 'Chờ xử lý', hint: 'Xác nhận hoặc từ chối đơn mới' },
+  { trangThai: 0, label: 'Chờ xử lý', hint: 'Đơn khách hàng vừa đặt trên web: xác nhận hoặc từ chối' },
   { trangThai: 1, label: 'Đã xác nhận', hint: 'Phân bổ trạm trộn cho đơn' },
   { trangThai: 6, label: 'Đã phân bổ trạm', hint: 'Tạo chuyến và giao cho tài xế' },
 ]
@@ -206,18 +206,22 @@ function CreateTripModal({ order, onClose, onDone }: { order: DonHangDieuPhoi; o
         <button className="btn btn-primary" onClick={submit} disabled={busy || loadingLists}>{busy && <LoaderCircle size={15} className="spin" />}Tạo chuyến</button></>}>
       <p>{order.tenCongTrinh ?? order.diaChiGiao} · <b>{order.khoiLuong} m³</b> {order.macBeTong ?? ''} · Trạm: <b>{order.tenTram ?? '—'}</b> · Giao lúc {dateTime(order.thoiGianGiao)}</p>
       {loadingLists ? <div className="empty-state"><LoaderCircle className="spin" />Đang tải xe và tài xế rảnh…</div> : <>
-        <Field label="Xe rảnh" hint={vehicles!.length === 0 ? 'Không có xe nào đang rảnh' : undefined}>
+        <Field label="Xe rảnh">
           <select value={idXe} onChange={(e) => chooseVehicle(e.target.value)}>
             <option value="">— Chọn xe —</option>
             {vehicles!.map((v) => <option key={v.idXe} value={v.idXe}>{v.bienSo} ({v.trongTai} m³)</option>)}
           </select>
         </Field>
-        <Field label="Tài xế rảnh" hint={drivers!.length === 0 ? 'Không có tài xế nào đang rảnh' : 'Tài xế đang có chuyến dở sẽ không hiện ở đây'}>
+        <Field label="Tài xế rảnh" hint="Tài xế đang có chuyến chưa hoàn thành sẽ không hiện ở đây">
           <select value={idTX} onChange={(e) => { setIdTX(e.target.value); setError('') }}>
             <option value="">— Chọn tài xế —</option>
             {drivers!.map((d) => <option key={d.idTX} value={d.idTX}>{d.hoTen} · {d.sdt}{d.bienSoXeDangGan ? ` · xe ${d.bienSoXeDangGan}` : ''}</option>)}
           </select>
         </Field>
+        {(vehicles!.length === 0 || drivers!.length === 0) && <div className="form-error">
+          {vehicles!.length === 0 && <div>Không có xe rảnh: xe đang có chuyến chưa hoàn thành hoặc đang bảo trì.</div>}
+          {drivers!.length === 0 && <div>Không có tài xế rảnh: tài xế đang có chuyến chưa hoàn thành (kể cả chuyến "Chờ nhận") thì không được giao thêm. Hãy hoàn thành chuyến cũ trên app, hoặc chạy du_lieu_test_dieu_phoi.sql để có tài xế rảnh (taixe03).</div>}
+        </div>}
         <div className="notice"><StatusPill tone="info">Chờ nhận</StatusPill> Chuyến mới sẽ ở trạng thái Chờ nhận cho tới khi tài xế bấm "Nhận chuyến" trên app.</div>
       </>}
       {error && <div className="form-error">{error}</div>}

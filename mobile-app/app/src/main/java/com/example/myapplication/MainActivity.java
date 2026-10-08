@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
                 "Lịch trình", "Chuyến đi được giao hôm nay", TripsActivity.class);
         setupRow(R.id.rowGps, R.drawable.ic_location, R.drawable.bg_icon_blue, R.color.colorSecondary,
                 "Gửi vị trí GPS", "Bật/tắt định vị, theo dõi hành trình", GpsLocationActivity.class);
+        setupRow(R.id.rowIncidents, R.drawable.ic_warning, R.drawable.bg_icon_red, R.color.colorError,
+                "Sự cố đã báo", "Xem điều phối đã tiếp nhận / xử lý chưa", MyIncidentsActivity.class);
         setupRow(R.id.rowProfile, R.drawable.ic_person, R.drawable.bg_icon_indigo, R.color.colorPrimary,
                 "Hồ sơ & mật khẩu", "Thông tin cá nhân, đổi mật khẩu", ProfileActivity.class);
 

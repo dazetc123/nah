@@ -29,6 +29,7 @@
         <activity android:name=".TripsActivity" android:exported="false" />
         <activity android:name=".TripDetailActivity" android:exported="false" />
         <activity android:name=".DeliveryConfirmActivity" android:exported="false" />
+        <activity android:name=".MyIncidentsActivity" android:exported="false" />
         <activity android:name=".GpsLocationActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
 

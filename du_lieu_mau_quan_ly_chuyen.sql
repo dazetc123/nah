@@ -47,12 +47,13 @@ VALUES ('29C-123.45', 9, 1);
 UPDATE xe SET idtx = (SELECT idtx FROM tai_xe WHERE idtk = (SELECT idtk FROM tai_khoan WHERE ten_dang_nhap = 'taixe01'))
 WHERE bien_so = '29C-123.45';
 
--- 7) Đơn hàng (trạng thái 6 = đã phân bổ trạm, điều kiện để tạo chuyến)
+-- 7) Đơn hàng (trạng thái 3 = đang giao, vì bước 8 tạo luôn chuyến cho đơn này bằng SQL;
+--    muốn thử tạo chuyến trên web thì dùng du_lieu_test_dieu_phoi.sql)
 -- Cột version (khóa lạc quan @Version) phải có giá trị, nếu NULL thì Hoàn thành chuyến sẽ lỗi 500.
 INSERT INTO don_hang (idkh, idct, ngay_dat, thoi_gian_giao, tong_khoi_luong, tong_tien, trang_thai, ghi_chu, id_tram, version)
 VALUES ((SELECT idkh FROM khach_hang WHERE sdt = '0911111111'),
         (SELECT idct FROM cong_trinh WHERE sdt = '0922222222'),
-        CURDATE(), DATE_ADD(NOW(), INTERVAL 2 HOUR), 8.5, 12750000, 6,
+        CURDATE(), DATE_ADD(NOW(), INTERVAL 2 HOUR), 8.5, 12750000, 3,
         CONVERT(UNHEX('4769616F207468E1BBAD206E676869E1BB876D') USING utf8mb4),
         (SELECT id_tram FROM tram_tron WHERE sdt = '0933333333'), 0);
 

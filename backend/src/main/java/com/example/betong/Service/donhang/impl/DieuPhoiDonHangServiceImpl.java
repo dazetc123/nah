@@ -50,8 +50,11 @@ public class DieuPhoiDonHangServiceImpl implements DieuPhoiDonHangService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<DonHangResponse> danhSachTheoTrangThai(int trangThai, int trang, int soLuong) {
-        return PageResponse.tu(donHangRepository.findByTrangThaiOrderByNgayDatAscIdDHAsc(
-                trangThai, PageRequest.of(Math.max(0, trang - 1), Math.max(1, soLuong))), this::sangResponse);
+        PageRequest page = PageRequest.of(Math.max(0, trang - 1), Math.max(1, soLuong));
+        // Đơn đã phân bổ trạm nhưng đã có chuyến thì không hiện để tạo chuyến lần nữa
+        return PageResponse.tu(trangThai == DA_PHAN_BO_TRAM
+                ? donHangRepository.timChuaCoChuyen(trangThai, page)
+                : donHangRepository.findByTrangThaiOrderByNgayDatAscIdDHAsc(trangThai, page), this::sangResponse);
     }
 
     @Override

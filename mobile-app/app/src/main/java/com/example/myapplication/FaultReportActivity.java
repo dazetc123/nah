@@ -217,6 +217,10 @@ public class FaultReportActivity extends AppCompatActivity {
                 .setTitle("Đã gửi báo cáo sự cố")
                 .setMessage(msg)
                 .setCancelable(false)
+                .setNegativeButton("Xem trạng thái xử lý", (d, w) -> {
+                    startActivity(new android.content.Intent(this, MyIncidentsActivity.class));
+                    finish();
+                })
                 .setPositiveButton("Xong", (d, w) -> finish())
                 .show();
     }

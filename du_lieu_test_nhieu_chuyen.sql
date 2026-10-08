@@ -68,8 +68,9 @@ SET @lbt = (SELECT idlbt FROM loai_be_tong WHERE mac_be_tong = 'M300' LIMIT 1);
 UPDATE tram_tron SET vi_do = 21.0362, kinh_do = 105.7906 WHERE id_tram = @tram;
 
 -- 5) Đơn A: giao ngày mai, 9 m³, 2 chuyến Chờ nhận cho taixe01
+--    (đơn đã có chuyến nên trạng thái đơn là 3 = Đang giao, giống khi điều phối tạo chuyến trên web)
 INSERT INTO don_hang (idkh, idct, ngay_dat, thoi_gian_giao, tong_khoi_luong, tong_tien, trang_thai, ghi_chu, id_tram, version)
-VALUES (@kh, @ct, CURDATE(), DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1 DAY), INTERVAL 9 HOUR), 9, 13500000, 6,
+VALUES (@kh, @ct, CURDATE(), DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1 DAY), INTERVAL 9 HOUR), 9, 13500000, 3,
         'Đơn A - 2 chuyến (test nhận 2 chuyến, đơn nhiều chuyến)', @tram, 0);
 SET @dhA = LAST_INSERT_ID();
 INSERT INTO chi_tiet_don_hang (iddh, idlbt, khoi_luong, don_gia, thanh_tien) VALUES (@dhA, @lbt, 9, 1500000, 13500000);
@@ -93,13 +94,17 @@ VALUES (@dhB, @xe1, @tx1, @tram, 6, 5,
 
 -- 7) Đơn C: 1 chuyến Chờ nhận của taixe02 (dùng cho test 1.2.5)
 INSERT INTO don_hang (idkh, idct, ngay_dat, thoi_gian_giao, tong_khoi_luong, tong_tien, trang_thai, ghi_chu, id_tram, version)
-VALUES (@kh, @ct, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 17 HOUR), 7, 10500000, 6, 'Đơn C - của taixe02', @tram, 0);
+VALUES (@kh, @ct, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 17 HOUR), 7, 10500000, 3,
+        'Đơn C - của taixe02', @tram, 0);
 SET @dhC = LAST_INSERT_ID();
 INSERT INTO chi_tiet_don_hang (iddh, idlbt, khoi_luong, don_gia, thanh_tien) VALUES (@dhC, @lbt, 7, 1500000, 10500000);
 INSERT INTO chuyen (iddh, id_xe, idtx, id_tram, khoi_luong, trang_thai) VALUES (@dhC, @xe2, @tx2, @tram, 7, 0);
 
 -- Sửa các đơn hàng cũ thiếu version (tránh lỗi 500 khi Hoàn thành chuyến)
 UPDATE don_hang SET version = 0 WHERE version IS NULL;
+-- Đơn đã có chuyến thì không còn ở "Đã phân bổ trạm" (6) mà là "Đang giao" (3)
+UPDATE don_hang SET trang_thai = 3
+WHERE trang_thai = 6 AND iddh IN (SELECT iddh FROM (SELECT DISTINCT iddh FROM chuyen) AS c);
 
 -- Kiểm tra
 SELECT c.id_chuyen, tk.ten_dang_nhap AS tai_xe, c.trang_thai, c.khoi_luong, d.iddh, d.thoi_gian_giao, d.ghi_chu

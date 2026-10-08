@@ -36,4 +36,14 @@ public interface DonHangRepository extends JpaRepository<DonHang, Long> {
             WHERE d.idDH = :id AND (tk.tenDangNhap = :dinhDanh OR tk.email = :dinhDanh)
             """)
     java.util.Optional<DonHang> findCuaKhach(@Param("dinhDanh") String dinhDanh, @Param("id") Long id);
+
+    /** Trang web điều phối, tab "Đã phân bổ trạm": chỉ đơn CHƯA có chuyến nào (mới tạo chuyến được). */
+    @org.springframework.data.jpa.repository.Query("""
+            SELECT d FROM DonHang d
+            WHERE d.trangThai = :trangThai
+              AND NOT EXISTS (SELECT c.idChuyen FROM Chuyen c WHERE c.donHang = d)
+            ORDER BY d.ngayDat ASC, d.idDH ASC
+            """)
+    Page<DonHang> timChuaCoChuyen(@org.springframework.data.repository.query.Param("trangThai") Integer trangThai,
+                                  Pageable pageable);
 }

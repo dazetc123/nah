@@ -66,6 +66,10 @@ public interface ApiService {
                                         @Part("ghiChu") RequestBody ghiChu,
                                         @Part MultipartBody.Part anhMinhChung);
 
+    /** Sự cố tài xế đã báo, kèm trạng thái xử lý của điều phối. */
+    @GET("api/tai-xe/su-co")
+    Call<PageResponse<SuCo>> getSuCoCuaToi(@Query("trang") int trang, @Query("soLuong") int soLuong);
+
     /** idChuyen null = server tự lấy chuyến đang thực hiện của tài xế. */
     @Multipart
     @POST("api/tai-xe/su-co")

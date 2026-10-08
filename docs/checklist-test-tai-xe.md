@@ -258,6 +258,7 @@ SELECT iddh, trang_thai FROM don_hang;  -- 4 = Hoàn thành
 | 3.4.11 | Đã nhập dữ liệu rồi bấm Back | Hỏi "Thoát báo cáo?" | 🔵 | |
 | 3.4.12 | Luồng 4.b: mất mạng khi gửi | Snackbar lỗi mạng | 🔵 / ⚪ phần lưu tạm | |
 | 3.4.13 | Thông báo đẩy (push) thật tới điều phối | | ⚪ Hệ thống hiện chỉ ghi log, giống các thông báo khác của dự án | |
+| 3.4.14 | Trang chủ → **Sự cố đã báo** (hoặc nút "Xem trạng thái xử lý" sau khi gửi) | Danh sách sự cố đã gửi, nhãn trạng thái: vàng **Mới tiếp nhận** / tím **Đang xử lý** / xanh **Đã xử lý**. Khi điều phối bấm trên web, màn hình tự cập nhật trong ≤ 15 giây | 🔵 | |
 
 ---
 

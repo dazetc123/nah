@@ -70,6 +70,7 @@ Trang có 3 nút lọc theo đúng thứ tự công việc: **Chờ xử lý** �
 
 | # | Thao tác trên web | Mong đợi | Tình trạng | Pass/Fail |
 |---|----------|----------|-----------|-----------|
+| 1.0 | *(Cách thật nhất để có đơn mới)* Web: đăng nhập `khachhang01` / `123456789` → **Đặt bê tông** → đặt một đơn | Đơn vừa đặt hiện ở tab **Chờ xử lý** của điều phối | 🔵 | |
 | 1.1 | Mở trang, nút **Chờ xử lý** đang chọn | Thấy Đơn D ("Don D - test dieu phoi…") và Đơn E ("Don E - test tu choi"): mã đơn, công trình + địa chỉ, M300 · khối lượng, giờ giao, tổng tiền | 🟢 | |
 | 1.2 | Dòng **Đơn E** → **Từ chối** → để trống lý do → **Từ chối đơn** | Báo đỏ "Vui lòng nhập lý do từ chối", hộp thoại không đóng | 🟢 | |
 | 1.3 | Nhập "Hết công suất trong ngày" → **Từ chối đơn** | Thông báo xanh "Từ chối đơn hàng thành công", Đơn E biến khỏi danh sách | 🟢 | |
@@ -83,7 +84,9 @@ Trang có 3 nút lọc theo đúng thứ tự công việc: **Chờ xử lý** �
 
 | # | Thao tác | Mong đợi | Tình trạng | Pass/Fail |
 |---|----------|----------|-----------|-----------|
+| 2.0 | Tab **Đã phân bổ trạm** | Chỉ hiện đơn **chưa có chuyến**. Đơn đã có chuyến (ví dụ Đơn A, Đơn C trong dữ liệu test) không hiện ở đây | 🟢 | |
 | 2.1 | Web: nút **Đã phân bổ trạm** → dòng Đơn D → **Tạo chuyến** | Hộp thoại: thông tin đơn, ô **Xe rảnh** có `29C-333.33`, ô **Tài xế rảnh** có "Le Van Ba". **Không** có `taixe01` vì đang có chuyến dở | 🟢 | |
+| 2.1b | Khi mọi tài xế đều đang có chuyến chưa hoàn thành | Hộp thoại báo đỏ "Không có tài xế rảnh: tài xế đang có chuyến chưa hoàn thành…" | 🔵 | |
 | 2.2 | Không chọn gì, bấm **Tạo chuyến** | Báo "Vui lòng chọn xe và tài xế" | 🟢 | |
 | 2.3 | Chọn xe `29C-333.33` | Ô tài xế **tự chọn** "Le Van Ba" (tài xế đang được gán cho xe đó), dòng báo lỗi tự biến mất | 🟢 | |
 | 2.4 | Bấm **Tạo chuyến** | "Tạo chuyến và phân công tài xế thành công — Chuyến #…". **Ghi lại số chuyến**, gọi là `{C}`. Đơn D biến khỏi danh sách | 🟢 | |
@@ -128,7 +131,7 @@ Trang **tự làm mới mỗi 15 giây**.
 | 4.6 | Web: dòng `{SC}` → **Nhận xử lý** → **Nhận xử lý** | "Sự cố #{SC}: Đang xử lý", sự cố rời khỏi tab Mới tiếp nhận | 🟢 | |
 | 4.7 | Bấm nút **Đang xử lý** | Thấy `{SC}`, nhãn xanh dương **Đang xử lý**, chỉ còn nút **Đã xử lý** | 🟢 | |
 | 4.8 | Bấm **Đã xử lý** → **Đã xử lý** | "Sự cố #{SC}: Đã xử lý". Ở tab **Đã xử lý** có `{SC}`, nhãn xanh lá, không còn nút nào | 🟢 | |
-| 4.9 | Tài xế xem kết quả xử lý | Qua API `GET /api/tai-xe/su-co` (Swagger, đăng nhập `taixe03`) thấy "Đã xử lý" | 🟢 API / ⚪ app chưa có màn xem lại | |
+| 4.9 | **App (taixe03):** trang chủ → **Sự cố đã báo** | Thấy `{SC}` với nhãn xanh lá **Đã xử lý** và dòng "Điều phối đã xử lý xong sự cố này". Màn hình tự làm mới mỗi 15 giây, nên nếu đang mở sẵn trong lúc điều phối bấm thì trạng thái tự đổi: Mới tiếp nhận → Đang xử lý → Đã xử lý | 🔵 | |
 
 ---
 
@@ -165,7 +168,6 @@ Trang **tự làm mới mỗi 15 giây**.
 |----------|-----------|
 | Thông báo đẩy cho điều phối khi tài xế cập nhật hoặc báo sự cố | ⚪ Backend chỉ ghi log. Web tự làm mới mỗi 10–15 giây thay cho thông báo đẩy |
 | Bản đồ nhúng trên web để xem vị trí xe | ⚪ Web hiện tọa độ, bấm vào thì mở Google Maps |
-| App tài xế xem lại danh sách sự cố đã gửi và trạng thái xử lý | ⚪ Có API, app chưa có màn hình |
 | Trang web "Lịch trình" của tài xế | ⚪ Gọi API `/api/dieu-phoi/chuyen-xe` không tồn tại (lỗi có sẵn của nhóm, không thuộc phần điều phối) |
 
 ---
