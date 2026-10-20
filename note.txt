@@ -1,0 +1,9 @@
+1. backend/... — các file Java cho Spring Boot:
+
+File mới: TrangThaiChuyen.java, cả gói taixechuyen (DTO + Service + Controller) — đây là API mới cho tài xế
+File sửa (đè lên file cũ): ChuyenRepository.java, SecurityConfig.java, DieuPhoiXeServiceImpl.java, TheoDoiXeServiceImpl.java
+
+2. mobile-app/... — các file cho app Android:
+
+File mới: TripDetailActivity.java, các model/util/adapter, 3 layout XML mới (item_trip.xml, activity_trip_detail.xml, item_detail_row.xml)
+File sửa: ApiService.java, TripsActivity.java, activity_trips.xml, AndroidManifest.xml, app/build.gradle.kts

@@ -1,0 +1,4 @@
+<resources>
+    <!-- App luôn dùng giao diện sáng để tài xế dễ nhìn ngoài trời -->
+    <style name="Base.Theme.MyApplication.Night" parent="Base.Theme.MyApplication" />
+</resources>
