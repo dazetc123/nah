@@ -36,6 +36,7 @@ class DangNhapTaiXeTest extends KiemThuTaiXeCoSo {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"dinhDanh\":\"" + tx.tenDangNhap() + "\",\"matKhau\":\"saimatkhau99\"}"))
                 .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Tên đăng nhập/email hoặc mật khẩu không đúng"))
                 .andExpect(jsonPath("$.accessToken").doesNotExist());
     }
 
@@ -52,6 +53,7 @@ class DangNhapTaiXeTest extends KiemThuTaiXeCoSo {
         TaiXeTest tx = taoTaiXe();
 
         mvc.perform(get("/api/tai-xe/chuyen/cua-toi").header("Authorization", "Bearer " + tx.token()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("ClientKey không hợp lệ"));
     }
 }
