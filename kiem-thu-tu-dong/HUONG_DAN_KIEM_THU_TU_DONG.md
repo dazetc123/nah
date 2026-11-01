@@ -13,46 +13,36 @@ Thư mục này chứa **bộ kiểm thử tự động** cho các chức năng 
 
 ## 1. Chép file vào dự án của nhóm
 
-Giả sử bạn đã giải nén bản 3 ở `C:\Users\LENOVO\Downloads\betong-main (3)\betong-main`. Đổi đường dẫn nếu bạn để chỗ khác.
+Bản 3 của nhóm giải nén ở `C:\Users\LENOVO\Downloads\betong-main (3)\betong-main`. Đổi đường dẫn nếu bạn để chỗ khác.
 
-**Bước 1.1 – Lấy file về.** Trong thư mục repo của bạn:
+**Bước 1.1 – Lấy file về.** Mở CMD:
 ```
 cd "C:\Users\LENOVO\Downloads\Be tong\betong-test"
 git pull
 ```
 
-**Bước 1.2 – Chép thư mục test của backend.** Có file `BetongApplicationTests.java` trùng tên với file của nhóm; mình chỉ thêm 1 dòng `@ActiveProfiles("test")` vào đó. Chép đè được.
+**Bước 1.2 – Chép vào thư mục `backend` của bản 3 (một lệnh):**
 ```
-xcopy /E /Y "C:\Users\LENOVO\Downloads\Be tong\betong-test\kiem-thu-tu-dong\backend\src\test" "C:\Users\LENOVO\Downloads\betong-main (3)\betong-main\backend\src\test\"
+xcopy /E /Y "C:\Users\LENOVO\Downloads\Be tong\betong-test\kiem-thu-tu-dong\backend" "C:\Users\LENOVO\Downloads\betong-main (3)\betong-main\backend\"
 ```
+Lệnh này chép vào:
+- thư mục `src\test` (các file test mới, và file `BetongApplicationTests.java` của nhóm có thêm 1 dòng `@ActiveProfiles("test")`);
+- file `pom.xml`. Nó **giống hệt** `pom.xml` của nhóm, chỉ khác 2 chỗ:
+  1. thêm thư viện H2 (CSDL chạy trong bộ nhớ, chỉ dùng khi test);
+  2. Lombok `1.18.34` → `1.18.42` (sửa lỗi `TypeTag :: UNKNOWN` trên JDK 25), nên từ nay không cần gõ `-Dlombok.version=...` nữa.
 
-**Bước 1.3 – Thêm thư viện H2 vào `backend\pom.xml`.** H2 là CSDL chạy trong bộ nhớ, chỉ dùng khi test.
-
-Mở `pom.xml` bằng Notepad, tìm đoạn:
-```xml
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-```
-Dán ngay **bên dưới** đoạn đó:
-```xml
-
-        <!-- [KIỂM THỬ] CSDL H2 chạy trong bộ nhớ: chạy test không cần MySQL -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-```
-
-**Bước 1.4 (khuyên làm) – Sửa phiên bản Lombok** để khỏi phải gõ `-Dlombok.version=1.18.42` mỗi lần. Đây vẫn là lỗi JDK 25 với Lombok cũ như lần trước. Trong `pom.xml` sửa:
-```xml
-<lombok.version>1.18.34</lombok.version>
-```
-thành:
-```xml
-<lombok.version>1.18.42</lombok.version>
-```
+> Nếu trưởng nhóm sửa `pom.xml` sau này thì đừng chép đè file của mình. Khi đó mở `pom.xml` của nhóm và tự sửa 2 chỗ trên:
+> ```xml
+> <lombok.version>1.18.42</lombok.version>
+> ```
+> và thêm ngay dưới khối `spring-security-test`:
+> ```xml
+>         <dependency>
+>             <groupId>com.h2database</groupId>
+>             <artifactId>h2</artifactId>
+>             <scope>test</scope>
+>         </dependency>
+> ```
 
 Sau khi chép, cấu trúc sẽ như sau:
 ```
@@ -79,7 +69,7 @@ backend\src\test\
 cd "C:\Users\LENOVO\Downloads\betong-main (3)\betong-main\backend"
 mvnw test
 ```
-Nếu chưa làm bước 1.4 thì thêm `-Dlombok.version=1.18.42` vào cuối lệnh.
+Nếu bạn dùng `pom.xml` của nhóm (chưa sửa Lombok) thì thêm `-Dlombok.version=1.18.42` vào cuối lệnh.
 
 Lần đầu Maven tải thư viện H2 nên hơi lâu. Từ lần sau mất khoảng 30–40 giây. Không cần bật MySQL, Redis hay backend.
 
@@ -293,6 +283,6 @@ File `mobile-app/app/src/androidTest/java/com/example/myapplication/DangNhapGiao
 
 - **Chạy test có làm mất dữ liệu MySQL của tôi không?** Không. Test dùng H2 trong bộ nhớ, hoàn toàn tách khỏi MySQL.
 - **Có cần bật backend (`mvnw spring-boot:run`) trước khi test không?** Không. Test tự khởi động backend bên trong.
-- **Báo `TypeTag :: UNKNOWN`?** Đó là lỗi Lombok cũ với JDK 25. Làm bước 1.4, hoặc thêm `-Dlombok.version=1.18.42`.
-- **Báo lỗi không tìm thấy `org.h2.Driver`?** Chưa làm bước 1.3 (thêm H2 vào `pom.xml`).
+- **Báo `TypeTag :: UNKNOWN`?** Đó là lỗi Lombok cũ với JDK 25. Chép `pom.xml` ở bước 1.2, hoặc thêm `-Dlombok.version=1.18.42`.
+- **Báo lỗi không tìm thấy `org.h2.Driver`?** `pom.xml` chưa có thư viện H2. Xem bước 1.2.
 - **Muốn tạm bỏ qua ca DN-06 để build xanh?** Thêm `@Disabled("Lỗi DN-06 chưa sửa")` trên hàm `dn06_chuaDangNhap`. Nhưng khi báo cáo nên giữ nguyên để nhóm thấy lỗi.
