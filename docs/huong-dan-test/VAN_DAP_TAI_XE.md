@@ -47,11 +47,20 @@ Cách dùng tài liệu này:
 Đ: Đây là quy tắc nghiệp vụ: không có bằng lái thì không được lái xe. Hệ thống chặn ở cả giao diện web (báo ngay) và máy chủ (trả lỗi 403), nên dù gọi thẳng API cũng không lách được.
 
 **H: Kiểm tra bán kính 200 m làm ở đâu?**
-Đ: Ở **cả hai nơi**:
-- **Trình duyệt/app:** tính khoảng cách bằng công thức Haversine để báo lỗi ngay cho người dùng.
-- **Máy chủ:** tính lại lần nữa, xa hơn 200 m thì trả lỗi.
+Đ: Chốt chặn chính nằm ở **máy chủ**; web chặn thêm một lớp, còn app chỉ nhắc chứ không chặn.
 
-Kiểm tra trên giao diện giúp người dùng biết lỗi nhanh. Kiểm tra trên máy chủ để chống gian lận, vì người dùng có thể sửa code giao diện, nhưng không sửa được máy chủ.
+| Nơi | Code | Làm gì |
+|---|---|---|
+| **Máy chủ** (chốt chặn chính) | `TaiXeChuyenServiceImpl.kiemTraGanCongTrinh` | Nhận tọa độ app/web gửi lên, tính khoảng cách tới tọa độ công trình (bảng `cong_trinh`, cột `vi_do`, `kinh_do`). Xa hơn 200 m thì trả lỗi 400 *"Bạn chưa tới gần công trình (còn cách khoảng X m, cần trong 200 m)"*. Nếu không có tọa độ gửi lên thì lấy điểm GPS gần nhất trong bảng `vi_tri_gps`; vẫn không có thì báo *"Không xác định được vị trí hiện tại của bạn…"*. Bán kính 200 m đặt trong cấu hình `app.chuyen.ban-kinh-den-cong-trinh-m`. |
+| **Web** (chặn thêm ở trình duyệt) | `DriverTripsPage.tsx`, hàm `getDistanceInMeters` | Lấy vị trí trình duyệt (`navigator.geolocation`), tự tính khoảng cách. Xa hơn 200 m thì báo *"Xe chưa tới công trình (hiện còn cách khoảng X m)…"* và **không gửi** lên máy chủ. Gần thì mới gửi, rồi máy chủ kiểm tra lại. |
+| **App** (chỉ nhắc) | `TripsActivity.checkArrival` | Vào trong 200 m thì hiện gợi ý *"Bạn đã tới gần công trình…"*. Khi bấm "Đã đến công trình", app **không tự chặn** mà gửi tọa độ cho máy chủ quyết định. |
+
+- **Công thức Haversine:** tính khoảng cách giữa hai điểm (vĩ độ, kinh độ) trên mặt cầu Trái Đất bán kính 6.371 km. Cả 3 nơi dùng cùng công thức nên ra cùng con số, ví dụ trạm trộn → công trình ≈ 3619 m.
+- **Vì sao kiểm tra 2 lớp:** kiểm tra ở trình duyệt để người dùng biết lỗi ngay, không phải chờ máy chủ. Kiểm tra ở máy chủ để không ai lách được: người dùng có thể sửa code web hoặc gọi thẳng API, nhưng không sửa được máy chủ.
+- **Giới hạn (nói ra nếu bị hỏi sâu):**
+  - Máy chủ tin tọa độ mà thiết bị gửi lên, nên không chống được **giả vị trí** (chính cách nhóm dùng để test).
+  - Nếu công trình **chưa có tọa độ** thì bỏ qua kiểm tra.
+  - Trên app, nếu **chưa lấy được vị trí** hoặc vị trí **nằm ngoài Việt Nam**, app gửi luôn **tọa độ công trình** thay cho vị trí thật, nên máy chủ luôn cho qua. Cách khắc phục: chặn gửi khi chưa có GPS, phát hiện vị trí giả trên Android, đối chiếu với lịch sử hành trình trong `vi_tri_gps`.
 
 **H: Làm sao em test được 200 m khi ngồi ở nhà?**
 Đ: Giả lập vị trí:
