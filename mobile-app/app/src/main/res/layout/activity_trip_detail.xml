@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorBackground">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Driver.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Chi tiết chuyến"/>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Trạng thái -->
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Driver.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvMaChuyen"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="Chuyến #12"/>
+
+                        <TextView
+                            android:id="@+id/tvTrangThai"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_icon_amber"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp"
+                            android:textColor="@color/colorWarning"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            tools:text="Chờ nhận"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Công trình -->
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Driver.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Công trình nhận bê tông"
+                            android:textColor="@color/colorTextSecondary"
+                            android:textSize="12sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvTenCongTrinh"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            tools:text="Công trình Vinhomes Smart City"/>
+
+                        <TextView
+                            android:id="@+id/tvDiaChiCongTrinh"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/colorTextSecondary"
+                            android:textSize="14sp"
+                            tools:text="Đại Mỗ, Nam Từ Liêm, Hà Nội"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnMap"
+                                style="@style/Driver.Button.Outlined"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp"
+                                android:text="Chỉ đường"
+                                app:icon="@drawable/ic_location"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnCall"
+                                style="@style/Driver.Button.Outlined"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_weight="1"
+                                android:text="Gọi"
+                                app:icon="@drawable/ic_phone"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Chi tiết -->
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Driver.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <include android:id="@+id/rowMac" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowKhoiLuong" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowTram" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowBienSo" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowThoiGianDuKien" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowThoiGianGiao" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowGhiChu" layout="@layout/item_detail_row"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <!-- Mục 2.2.3 - kết quả "Đã đến công trình" và "Xác nhận giao hàng" -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardTienDo"
+                    style="@style/Driver.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:text="Tiến độ giao hàng"
+                            android:textColor="@color/colorTextSecondary"
+                            android:textSize="12sp"
+                            android:textStyle="bold"/>
+
+                        <include android:id="@+id/rowDaDen" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowGhiChuDen" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowKhoiLuongThucGiao" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowGhiChuGiaoHang" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowDonHangDaGiao" layout="@layout/item_detail_row"/>
+                        <include android:id="@+id/rowHoanThanh" layout="@layout/item_detail_row"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/actionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorSurface"
+        android:elevation="12dp"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReport"
+            style="@style/Driver.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Sự cố"
+            android:textColor="@color/colorError"
+            android:visibility="gone"
+            app:icon="@drawable/ic_warning"
+            app:iconTint="@color/colorError"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAction"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Nhận chuyến"/>
+    </LinearLayout>
+</LinearLayout>
